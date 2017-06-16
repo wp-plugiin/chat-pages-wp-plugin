@@ -1,4 +1,9 @@
-<?php
+<?php 
+ 
+    require_once("db/wpdb_chat_queries.class.php");
+    use CHAT_QUERIES\Chat_Queries;  
+
+
 	function sendmailscript( ){
 		global $wpdb, $FULLNAME, $FILECONTS;
 		
@@ -460,31 +465,40 @@
 		return $RESULTGETS;
 	}
 
-	add_action('wp_ajax_processWebsite', 'processWebsite');
-	function processWebsite() 
-	{	 
-		$action = $_POST['action']; 
+	add_action('wp_ajax_process_domain', 'process_domain');
+	function process_domain() 
+	{	   
+		// Initialized db class
+		$chat_queries = new Chat_Queries('wp_clientsites'); 
+ 
+		// Delete all the domain by partner id 
+		$chat_queries->wpdb_delete(['s_accountid'=>getCurrentLogggedInAccountId()]); 
+ 
+		// Get serialized post request
+		$request = $_REQUEST;
+ 
+		// For each request  
+		foreach($request['pnw_domain_values'] as $pnw_domain_value) { 
+			$chat_queries->wpdb_insert(
+				[
+					's_accountid'=>getCurrentLogggedInAccountId(), 
+					's_website' => $pnw_domain_value, 
+					's_accountidhash' => base64_encode(getCurrentLogggedInAccountId())
+				]
+			);
+		}  
 
- 		switch ($action) {
- 			
- 			case 'Add Site': 
- 					print "add new site"; 
- 				break; 
-			case 'Edit Site': 
- 					print "edit new site"; 
- 				break;  
-			case 'Delete Site':
- 					print "delete new site";  
-			break;   
- 			default: 
- 					print "default";
- 				break;
- 		}
-
+		return 'success';
+ 	 	  
 	}
 
+	function getCurrentLogggedInAccountId() 
+	{
+		
+		return 77333;
+	}
 
-
+	
 
 
 ?>

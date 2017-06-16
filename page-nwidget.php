@@ -1,18 +1,22 @@
 <?php
-/**
- * Template Name: Chat Settings Page
- */
+
+	/**
+	 * Template Name: Chat Settings Page
+	 */
     
- get_header(); 
+	 get_header(); 
+	 
+	 require_once ('live_chat_settings_helper.php'); 
+	 require_once ('live_chat_settings_ajax.php');  
+  
+ 	global $wpdb;
  
- require_once ('live_chat_settings_helper.php'); 
- require_once ('live_chat_settings_ajax.php'); 
- 
- global $wpdb;
- 
-	if(!is_user_logged_in()){
+	if(!is_user_logged_in()) {
+
 		echo '<center><h1>Please login to view this page</h1></center>';
-	}else{
+
+	} else {
+
 		$current_user = wp_get_current_user();
 
 		$API_URL	= 'http://api.ontraport.com/1/objects?';
@@ -26,32 +30,34 @@
 		);
  
 		if(pnw_is_local() == true) {  
+
 			$API_KEY 						=  'Kiok5B2tzM00Oqf';   
 			$API_ID							 = '2_7818_ubHppKG8C';   
 			$chat_settings_page_title   	 = 'Live Chat Settings Title'; 
 			$chat_settings_title_description = 'Live Chat Settings Desc';  
+
 		} else {
-			$API_KEY 						= get_field('custom_api_key','option');
-			$API_ID						    = get_field('custom_api_id','option');
-			$chat_settings_page_title = get_field('chat_settings_page_title','option'); 
+
+			$API_KEY 					  	 = get_field('custom_api_key','option');
+			$API_ID						     = get_field('custom_api_id','option');
+			$chat_settings_page_title 	     = get_field('chat_settings_page_title','option'); 
 			$chat_settings_title_description = get_field('chat_settings_title_description','option');
+
+			//$API_RESULT	= query_api_call($postargs, $API_ID, $API_KEY);
+			$API_RESULT = op_query($API_URL, 'GET', $API_DATA, $API_ID, $API_KEY);
+
+			$getName = json_decode($API_RESULT);
+
+			if(!$getName->data[0]->id){
+
+				echo '<div id="page-content"><center><h2>You are not allowed to view this page!</h2></center></div>';
+				get_footer();
+				exit();
+
+			} 
+
 		}
-
-
-		//$API_RESULT	= query_api_call($postargs, $API_ID, $API_KEY);
-
-		$API_RESULT = op_query($API_URL, 'GET', $API_DATA, $API_ID, $API_KEY);
-
-
-		$getName = json_decode($API_RESULT);
-
-		if(!$getName->data[0]->id){
-
-			echo '<div id="page-content"><center><h2>You are not allowed to view this page!</h2></center></div>';
-			get_footer();
-			exit();
-		}
-
+ 
 		$QUEGETSITE = "SELECT * FROM " . $wpdb->prefix . "clientsites WHERE s_accountid='" . $getName->data[0]->id . "'";
 		$RESULTGETS = $wpdb->get_results($QUEGETSITE);
 
@@ -181,30 +187,31 @@
 							<i>http://</i> <input id="pdw-domain-validation" type="text" name="" value="" class="search"  >  
  
 							<!-- add domain -->
-							<button type="submit" id="pnw-domain-add-button" class="query-wrapper query-add" ><img src="<?php echo get_template_directory_uri().'/images/add.png';?>"  onclick="processWebsite('Add Domain')" ></button>
-
-
+							<button type="button" id="pnw-domain-add-button" class="query-wrapper query-add" ><img src="<?php echo get_template_directory_uri().'/images/add.png';?>"  onclick="processWebsite('Add Domain')" ></button>
+ 
 							<!-- edit domain -->
-							<button type="submit" id="pnw-domain-update-button" class="query-wrapper query-add" style="display:none" ><img src="<?php echo get_template_directory_uri().'/images/add.png';?>"  onclick="processWebsite('Update Domain')" ></button>
-							
-
-
-
-
+							<button type="button" id="pnw-domain-update-button" class="query-wrapper query-add" style="display:none" ><img src="<?php echo get_template_directory_uri().'/images/add.png';?>"  onclick="processWebsite('Update Domain')" ></button>
+							 
 							<div id="pnw-adding-domain-message"> </div>
 						</td>
 					</tr>
 					<tr>
 						<td colspan="2"> 
-							<input type="hidden" id="pnw-total-site" value="0" />
+							
+							<input type="text" id="pnw-total-site" value="0" />
+							<input type="text" id="pnw-total-site-counter" value="0" />
+						
+						<form id="pnw_form" action="" method="POST" > 
+								
+							<input type="text" value="process_domain" name="action" />
 							<table id="web_list" class="display" cellspacing="0">
 								<thead>
 									<tr>
 										<th bgcolor="#CCCCCC" >#</th>
 										<th bgcolor="#CCCCCC">Website Address</th>
 										<th bgcolor="#CCCCCC">Action</th>
-										<th class="no-sort" bgcolor="#CCCCCC" >  Edit </th>
-										<th class="no-sort" bgcolor="#CCCCCC" >  Delete  </th>
+										<th class="no-sort" bgcolor="#CCCCCC" >Edit</th>
+										<th class="no-sort" bgcolor="#CCCCCC" >Delete</th>
 									</tr>
 								</thead>
 								<tbody> 
@@ -218,7 +225,7 @@
 											<span>
 											http://www.domain.com
 											</span>
-											<input type="hidden" value="http://www.domain.com" name='pnw-domain-value' id='pnw-domain-value-1' />
+											<input type="hidden" value="http://www.domain.com" name='pnw_domain_value' id='pnw-domain-value-1' />
 									 	</td>
 										<td>Active</td>
 										<td><button onclick="processWebsite('Edit Domain', 1)">Edit</button></td>
@@ -242,15 +249,21 @@
 										// 		$count++;
 										// 	}
 										// }
+										
 									?>
 								</tbody>
 							</table>
+
+
+						</form>
+
+
 						</td>
 					</tr>
 				</table>
 
-
-				<button>Save and Continue </button>
+				<div id="pnw-save-domain-loader" style="display:none">Saving...</div>
+				<button onclick="processWebsite('Save And Continue')">Save and Continue </button>
 			</div> <!-- end tab 2 -->
 			<div id="tab-3" class="ctab-content">
 				<table cellpadding="10" cellspacing="">

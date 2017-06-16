@@ -110,20 +110,24 @@ function processWebsite(action, id)
 
 				var domain = document.getElementById('pdw-domain-validation').value;  
 				var total  = document.getElementById('pnw-total-site');   
+				var total_counter  = document.getElementById('pnw-total-site-counter');   
 
 				if (isValidURL(domain)) {   
 
-					if(total.value < 5) {  
+					if(total_counter.value < 5) {  
 
-	 					// Increment total sites
+	 					// Increment total sites 
 						total.value = parseInt(total.value) + 1 ; 
-	  					
+
+	 					// Increment total sites counter
+						total_counter.value = parseInt(total_counter.value) + 1 ; 
+
 	  					// Append new html 
-						$("#web_list tbody").append("<tr id='pnw-domain-container-"+total.value+"'><td>" + total.value + "</td><td><span id='pnw-domain-text-"+total.value+"' >"+domain+"</span><input type='hidden' value='"+domain+"' name='pnw-domain-value' id='pnw-domain-value-"+total.value+"' /></td><td>Active</td><td><button onclick='processWebsite(\"Edit Domain\", "+total.value+")' >Edit</button></td><td><button onclick='processWebsite(\"Delete Domain\", "+total.value+")'>Delete</button></td></tr>");  
+						$("#web_list tbody").append("<tr id='pnw-domain-container-"+total.value+"'><td>" + total.value + "</td><td><span id='pnw-domain-text-"+total.value+"' >"+domain+"</span><input type='hidden' value='"+domain+"' name='pnw_domain_values[]' id='pnw-domain-value-"+total.value+"' /></td><td>Active</td><td><button type='button'  onclick='processWebsite(\"Edit Domain\", "+total.value+")' >Edit</button></td><td><button type='button' onclick='processWebsite(\"Delete Domain\", "+total.value+")'>Delete</button></td></tr>");  
 
 					} else {	  
 
-						alert(total.value + " domain allowed for now.");
+						alert(total_counter.value + " domain allowed for now.");
  
 						// display message if exceed 5 domain
 						// $("#pnw-adding-domain-message").html("<div class='alert alert-danger'><b>5 domain allowed for now.</b></div>");  
@@ -175,13 +179,63 @@ function processWebsite(action, id)
 
 					$("#pnw-domain-container-" + id).html("");
 
-					var total  = document.getElementById('pnw-total-site');   
+					var total_counter  = document.getElementById('pnw-total-site-counter');   
 
-					total.value = parseInt(total.value) - 1 ; 
+					total_counter.value = parseInt(total_counter.value) - 1 ; 
 
 				} 
 
 			break;  
+
+		case 'Save And Continue':
+
+				// Get all the domain in serialized format 
+				var data = $("#pnw_form").serialize(); 
+ 
+				// Show loader
+				$("#pnw-save-domain-loader").css("display", "block");
+
+				// Send all the domain via REST API_KEYI in serialized format   
+				jQuery.ajax({
+				   
+				   type: "POST", // HTTP method POST or GET
+				   
+				   url: "<?php echo admin_url('admin-ajax.php'); ?>", // Where to make Ajax calls
+ 				   
+				   data:data,
+
+				   success:function(response) { 
+ 
+				   		if(response == 'success' || response== 0) { 
+					   		// Alert response
+					   		console.log(response);  
+ 
+	 						// Proceed to tab 4
+	 						changeTab('open tab 3');
+ 						}
+
+						// Hide loader
+ 						$("#pnw-save-domain-loader").css("display", "none"); 
+
+				   },
+
+				   error:function (xhr, ajaxOptions, thrownError){
+
+						alert("Error: " + thrownError);
+						$("#pnw-save-domain-loader").css("display", "none");
+
+				   },
+
+				   complete: function(){
+			 			
+			 			$("#pnw-save-domain-loader").css("display", "none"); 
+
+				   }
+
+				});
+
+			break;
+
 
 		default:
 
@@ -212,14 +266,7 @@ function proceeChatSettings()
 
 	changeTab('open tab 4'); 
 }
-
-
-
-
-
-
-
-
+ 
 /**
  *  Helper Javascript  
  */
