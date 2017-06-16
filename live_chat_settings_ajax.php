@@ -1,0 +1,274 @@
+<script>
+$(document).ready(function()
+{
+
+	$('ul.ctabs li').click(function(){
+		var tab_id = $(this).attr('data-tab');
+		$('ul.ctabs li').removeClass('current');
+		$('.ctab-content').removeClass('current');
+
+		$(this).addClass('current');
+		$("#"+tab_id).addClass('current');
+	});
+
+	disablefields();
+});
+
+function disablefields()
+{
+	$("#p_ctxt1").prop('disabled',true);
+	$("#p_ctxt1").val(null);
+	$("#p_ctxt2").prop('disabled',true);
+	$("#p_ctxt2").val(null);
+	$("#S_OB_L1").prop('checked', true);
+	$("#S_OB_R1").prop('checked', false);
+}
+
+function enablefields()
+{
+	$("#p_ctxt1").prop('disabled',false);
+	$("#p_ctxt2").prop('disabled',false);
+	<?php
+		if($getRowsCI->ci_buttontype != "CUSTOM"){
+			echo '$("#p_ctxt1").val(null);';
+			echo '$("#p_ctxt2").val(null);';
+		}else{
+			echo '$("#p_ctxt1").val(\''.$getRowsCI->ci_imgpathon.'\');';
+			echo '$("#p_ctxt2").val(\''.$getRowsCI->ci_imgpathoff.'\');';
+		}
+	?>
+	$(".switch-input").prop('checked', false);
+} 
+
+function processicons()
+{
+
+	console.log("Test");
+	var managechat = $('#manageicons').serialize();
+	$('#preloader').show();
+
+	jQuery.ajax({
+	   
+	   type: "POST", // HTTP method POST or GET
+	   
+	   url: "<?php echo admin_url('admin-ajax.php'); ?>", //Where to make Ajax calls
+	   //dataType:"text", // Data type, HTML, json etc.
+	   
+	   data:managechat,
+
+	   success:function(response){
+ 	 
+	   	console.log( " response = " + response); 
+	  
+	 	if (response == 0 || 
+           response == "success" || 
+           response == 'success' || 
+           response === "success" || 
+           response === 'success' || 
+           response.indexOf("success") > -1
+        ) {    
+
+		 	console.log("success");  
+			changeTab('open tab 2'); 
+
+		 } else { 
+
+		 	console.log("failed"); 
+			 $('#error_container').html(response); 
+
+		 } 
+
+		//get_script();
+	   },
+
+	   error:function (xhr, ajaxOptions, thrownError){
+
+		alert("Error: " + thrownError);
+
+	   },
+
+	   complete: function(){
+
+			$('#preloader').hide();
+
+	   }
+
+	});
+
+	return false;
+} 
+
+/**
+ *  Step 2 field validation 
+ */
+function processWebsite(action, id) 
+{ 
+
+	switch(action) {  
+
+		case 'Add Domain': 
+
+				var domain = document.getElementById('pdw-domain-validation').value;  
+				var total  = document.getElementById('pnw-total-site');   
+
+				if (isValidURL(domain)) {   
+
+					if(total.value < 5) {  
+
+	 					// Increment total sites
+						total.value = parseInt(total.value) + 1 ; 
+	  					
+	  					// Append new html 
+						$("#web_list tbody").append("<tr id='pnw-domain-container-"+total.value+"'><td>" + total.value + "</td><td><span id='pnw-domain-text-"+total.value+"' >"+domain+"</span><input type='hidden' value='"+domain+"' name='pnw-domain-value' id='pnw-domain-value-"+total.value+"' /></td><td>Active</td><td><button onclick='processWebsite(\"Edit Domain\", "+total.value+")' >Edit</button></td><td><button onclick='processWebsite(\"Delete Domain\", "+total.value+")'>Delete</button></td></tr>");  
+
+					} else {	  
+
+						alert(total.value + " domain allowed for now.");
+ 
+						// display message if exceed 5 domain
+						// $("#pnw-adding-domain-message").html("<div class='alert alert-danger'><b>5 domain allowed for now.</b></div>");  
+
+					}
+
+					 console.log("Domain is valid and now try to insert to database");  
+
+				} else { 
+					alert("Please provide valid domain."); 
+				}
+ 
+			break;
+
+		case 'Edit Domain':  
+
+ 				// Get domain from display text and Add domain in the field to update
+ 				$('#pdw-domain-validation').val($("#pnw-domain-value-"+id).val()); 
+
+ 				// Assign id recent edited for update hit button
+ 				$edit_id = id;   
+ 
+ 				// show update button and hide add button
+ 				$("#pnw-domain-add-button").css('display', 'none');
+ 				$("#pnw-domain-update-button").css('display', 'block'); 
+
+			break;  
+
+		case 'Update Domain':  
+ 
+				// Update domain display text 
+ 				$("#pnw-domain-text-"+$edit_id).html($('#pdw-domain-validation').val());
+
+				// Update domain input hidden text
+ 				$("#pnw-domain-value-"+$edit_id).val($('#pdw-domain-validation').val());
+ 		  
+ 				// Clean the domain field
+ 				$('#pdw-domain-validation').val('');
+
+ 				// Show add button and hide update button
+ 				$("#pnw-domain-add-button").css('display', 'block');
+ 				$("#pnw-domain-update-button").css('display', 'none'); 
+
+			break; 
+
+		case 'Delete Domain':
+
+				if(confirm('Are you sure you want to delete this domain?')) {
+
+					$("#pnw-domain-container-" + id).html("");
+
+					var total  = document.getElementById('pnw-total-site');   
+
+					total.value = parseInt(total.value) - 1 ; 
+
+				} 
+
+			break;  
+
+		default:
+
+			// console.log("Default");
+			// console.log("Domain start validation..");  
+			// var domain = document.getElementById('pdw-domain-validation').value;  
+			// if (isValidURL(domain)) {
+
+			// 	console.log("valid domain"); 
+			// 	changeTab('open tab 3');  
+			// } else { 
+
+			// 	console.log("not valid domain");  
+			// } 
+		break;
+	}
+
+}
+
+
+
+
+/**
+ *  Step 3 hit save then should validate some fields 
+ */
+function proceeChatSettings()
+{ 
+
+	changeTab('open tab 4'); 
+}
+
+
+
+
+
+
+
+
+/**
+ *  Helper Javascript  
+ */
+function isValidURL(str) 
+{
+
+  	var regex = /(http|https):\/\/(\w+:{0,1}\w*)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/;
+  	
+  	if(!regex .test(str)) {
+
+    	console.log("Please enter valid URL.");
+    	return false;
+
+  	} else {
+
+    	return true;
+
+  	}
+}
+
+function changeTab(tab) 
+{ 
+
+	console.log(tab); 
+
+	/** Set all tabs as not selected */
+ 	$('ul.ctabs li').removeClass('current');
+
+ 	/** Set all tab content as not selected */
+ 	$('.ctab-content').removeClass('current'); 
+
+	if(tab == 'open tab 2') {
+		
+	 	/** Set second tab as selected  */
+	 	$('#menu-tab-2').addClass('current');
+	    $("#tab-2").addClass('current');
+
+	} else if (tab == 'open tab 3') {
+		
+		 /** Set third tab as selected  */
+	 	$('#menu-tab-3').addClass('current');
+	    $("#tab-3").addClass('current');
+
+	} else if (tab == 'open tab 4') {
+		
+		/** Set fourth tab as selected  */
+	 	$('#menu-tab-4').addClass('current');
+	    $("#tab-4").addClass('current');
+
+	}   
+} 
+</script>

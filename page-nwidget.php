@@ -2,11 +2,14 @@
 /**
  * Template Name: Chat Settings Page
  */
-
- get_header();
-
+    
+ get_header(); 
+ 
+ require_once ('live_chat_settings_helper.php'); 
+ require_once ('live_chat_settings_ajax.php'); 
+ 
  global $wpdb;
-
+ 
 	if(!is_user_logged_in()){
 		echo '<center><h1>Please login to view this page</h1></center>';
 	}else{
@@ -21,11 +24,18 @@
 			'condition'		=> "email='".$current_user->user_email."'",
 			'searchNotes'	=> 'true'
 		);
-
-
-
-		$API_KEY 	=  'Kiok5B2tzM00Oqf';  ///get_field('custom_api_key','option');
-		$API_ID		= '2_7818_ubHppKG8C'; //get_field('custom_api_id','option');
+ 
+		if(pnw_is_local() == true) {  
+			$API_KEY 						=  'Kiok5B2tzM00Oqf';   
+			$API_ID							 = '2_7818_ubHppKG8C';   
+			$chat_settings_page_title   	 = 'Live Chat Settings Title'; 
+			$chat_settings_title_description = 'Live Chat Settings Desc';  
+		} else {
+			$API_KEY 						= get_field('custom_api_key','option');
+			$API_ID						    = get_field('custom_api_id','option');
+			$chat_settings_page_title = get_field('chat_settings_page_title','option'); 
+			$chat_settings_title_description = get_field('chat_settings_title_description','option');
+		}
 
 
 		//$API_RESULT	= query_api_call($postargs, $API_ID, $API_KEY);
@@ -52,94 +62,18 @@
 		$getRowsCO	= $wpdb->get_row($getUserCO);
 
 ?>
-	<script type="text/javascript">
-		$(document).ready(function(){
 
-			$('ul.ctabs li').click(function(){
-				var tab_id = $(this).attr('data-tab');
-				$('ul.ctabs li').removeClass('current');
-				$('.ctab-content').removeClass('current');
-
-				$(this).addClass('current');
-				$("#"+tab_id).addClass('current');
-			});
-
-			disablefields();
-		});
-
-
-		function disablefields(){
-			$("#p_ctxt1").prop('disabled',true);
-			$("#p_ctxt1").val(null);
-			$("#p_ctxt2").prop('disabled',true);
-			$("#p_ctxt2").val(null);
-			$("#S_OB_L1").prop('checked', true);
-			$("#S_OB_R1").prop('checked', false);
-		}
-
-		function enablefields(){
-			$("#p_ctxt1").prop('disabled',false);
-			$("#p_ctxt2").prop('disabled',false);
-			<?php
-				if($getRowsCI->ci_buttontype != "CUSTOM"){
-					echo '$("#p_ctxt1").val(null);';
-					echo '$("#p_ctxt2").val(null);';
-				}else{
-					echo '$("#p_ctxt1").val(\''.$getRowsCI->ci_imgpathon.'\');';
-					echo '$("#p_ctxt2").val(\''.$getRowsCI->ci_imgpathoff.'\');';
-				}
-			?>
-			$(".switch-input").prop('checked', false);
-		}
-
-		function processicons(){
-
-			alert("Test");
-			var managechat = $('#manageicons').serialize();
-			$('#preloader').show();
-			jQuery.ajax({
-			   type: "POST", // HTTP method POST or GET
-			   url: "<?php echo admin_url('admin-ajax.php'); ?>", //Where to make Ajax calls
-			   //dataType:"text", // Data type, HTML, json etc.
-			   data:managechat,
-			   success:function(response){
-				 //responseaction
-				 if(response == "success"){
-					$('ul.ctabs li').removeClass('current');
-					$('.ctab-content').removeClass('current');
-
-					$('.ctab-link').addClass('current');
-					$("#tab-2").addClass('current');
-                     $("#tab-3").addClass('current');
-                     $("#tab-4").addClass('current');
-				 }else{
-					 $('#error_container').html(response);
-				 }
-
-				//get_script();
-			   },
-			   error:function (xhr, ajaxOptions, thrownError){
-				alert("Error: " + thrownError);
-			   },
-			   complete: function(){
-				$('#preloader').hide();
-			   }
-			});
-			return false;
-		}
-	</script>
 	<div id="page-content">
-		<h2><?php echo 'Live Web Chat Settings'; //get_field('chat_settings_page_title','option'); ?></h2>
+		<h2><?php echo $chat_settings_page_title; ?></h2>
 		<p>
-			<?php echo 'Sample Description'; // get_field('chat_settings_title_description','option'); ?>
-		</p>
-
+			<?php echo $chat_settings_title_description; ?>
+		</p> 
 		<div class="chat-container">
 			<ul class="ctabs">
-				<li class="ctab-link current transact-none" data-tab="tab-1"><b>Chat Icons</b><span>(Step 1)</span></li>
-				<li class="ctab-link transact-none" data-tab="tab-2"><b>Websites</b><span>(Step 2)</span></li></li>
-				<li class="ctab-link transact-none" data-tab="tab-3"><b>Chat Settings</b><span>(Step 3)</span></li>
-				<li class="ctab-link transact-none" data-tab="tab-4"><b>Generated Script</b><span>(Step 4)</span></li>
+				<li class="ctab-link  transact-none" data-tab="tab-1" id="menu-tab-1" ><b>Chat Icons</b><span>(Step 1)</span></li>
+				<li class="ctab-link current transact-none" data-tab="tab-2" id="menu-tab-2" ><b>Websites</b><span>(Step 2)</span></li></li>
+				<li class="ctab-link transact-none" data-tab="tab-3" id="menu-tab-3" ><b>Chat Settings</b><span>(Step 3)</span></li>
+				<li class="ctab-link transact-none" data-tab="tab-4" id="menu-tab-4" ><b>Generated Script</b><span>(Step 4)</span></li>
 			</ul>
 			<div class="cmodal" id="modal-one" aria-hidden="true">
 				<div class="cmodal-dialog">
@@ -153,7 +87,7 @@
 
 
 
-			<div id="tab-1" class="ctab-content current transaction-query">
+			<div id="tab-1" class="ctab-content  transaction-query">
 				<form id="manageicons" type="post" action="">
 				<input type="hidden" id="p_clientid" name="p_clientid" value="<?php echo $getName->data[0]->id; ?>" />
                     <p>
@@ -165,8 +99,7 @@
                         <span style="color: #ff0000;"><strong>Offline Image:</strong></span>
                         <input type="text" class="urltext" name="p_cctxt2" id="p_ctxt2" value="<?php echo ($getRowsCI->ci_buttontype == "CUSTOM" && $getRowsCI->ci_imgpathoff ? $getRowsCI->ci_imgpathoff : ""); ?>">
                         <!-- <span style="font-size:11px">Example: <i>http://domain.com/images/offline.gif</i></span>-->
-                    </p>
-
+                    </p> 
                    <div style="margin: 0 auto;">
                        <p>Have your own Buttons?</p>
                        <div class="switch-field" style="padding: 10px 15px 50px 10px;">
@@ -175,8 +108,7 @@
                            <input onClick="enablefields()" type="radio" id="S_OB_R1" name="p_obut" value="1" <?php echo ($getRowsCI->ci_buttontype == "CUSTOM" ? "checked" : ""); ?> />
                            <label for="S_OB_R1">Yes</label>
                        </div>
-                   </div>
-
+                   </div> 
                     <?php
                         //echo photo_gallery(6);
                         $query 	= "SELECT * FROM ".$wpdb->prefix."posts WHERE post_title LIKE '%CHATICON%' ORDER BY post_title DESC";
@@ -232,53 +164,93 @@
                         }
                     ?>
                     <div id="error_container"></div><br />
-                    <div id="preloader" style="display:none; width:40px; height:40px;"><img src="http://testing.umbrellasupport.co.uk/wp-content/uploads/2016/07/preload.gif" /></div>
-                    <input type="hidden" name="action" value="process_icons"/>
+                    <div id="preloader"  style="height: 40px;display: none;" ><img src="http://testing.umbrellasupport.co.uk/wp-content/uploads/2016/07/preload.gif" /></div>
+                    <input type="hidden" name="action" value="process_icons"/> 
                     <input id="bigbutton" type="button" onClick="processicons()" name="p_submit" value="Save and Continue" />
 				</form>
 			</div>
-			<div id="tab-2" class="ctab-content">
+
+			
+			<div id="tab-2" class="ctab-content current">
 				<table cellpadding="10" cellspacing="">
 					<tr>
 						<td style="vertical-align:middle">
 							<b>Input Website Address:</b>
 						</td>
 						<td>
-							<i>http://</i> <input type="text" name="" value="" class="search"> <button type="submit" class="query-wrapper query-add"><img src="<?php echo get_template_directory_uri().'/images/add.png';?>"></button>
+							<i>http://</i> <input id="pdw-domain-validation" type="text" name="" value="" class="search"  >  
+ 
+							<!-- add domain -->
+							<button type="submit" id="pnw-domain-add-button" class="query-wrapper query-add" ><img src="<?php echo get_template_directory_uri().'/images/add.png';?>"  onclick="processWebsite('Add Domain')" ></button>
+
+
+							<!-- edit domain -->
+							<button type="submit" id="pnw-domain-update-button" class="query-wrapper query-add" style="display:none" ><img src="<?php echo get_template_directory_uri().'/images/add.png';?>"  onclick="processWebsite('Update Domain')" ></button>
+							
+
+
+
+
+							<div id="pnw-adding-domain-message"> </div>
 						</td>
 					</tr>
 					<tr>
-						<td colspan="2">
+						<td colspan="2"> 
+							<input type="hidden" id="pnw-total-site" value="0" />
 							<table id="web_list" class="display" cellspacing="0">
 								<thead>
 									<tr>
 										<th bgcolor="#CCCCCC" >#</th>
 										<th bgcolor="#CCCCCC">Website Address</th>
-										<th class="no-sort" bgcolor="#CCCCCC" >Action</th>
+										<th bgcolor="#CCCCCC">Action</th>
+										<th class="no-sort" bgcolor="#CCCCCC" >  Edit </th>
+										<th class="no-sort" bgcolor="#CCCCCC" >  Delete  </th>
 									</tr>
 								</thead>
-								<tbody>
+								<tbody> 
+
+
+									<!-- <tr id="pnw-domain-conteiner-1" >
+										<td>
+											1 
+										</td>
+										<td>
+											<span>
+											http://www.domain.com
+											</span>
+											<input type="hidden" value="http://www.domain.com" name='pnw-domain-value' id='pnw-domain-value-1' />
+									 	</td>
+										<td>Active</td>
+										<td><button onclick="processWebsite('Edit Domain', 1)">Edit</button></td>
+										<td><button onclick="processWebsite('Delete Domain', 1)">Delete</button></td> 
+									</tr> -->
+								
+
+
 									<?php
-										if($RESULTGETS){
-											$count = 1;
-											foreach($RESULTGETS as $R){
-												echo '<tr>';
-												echo '<td align="center">'.$count.'</td>';
-												echo '<td><b>'.$R->s_website.'</b></td>';
-												echo '<td>
-														<button type="submit" class="query-wrapper query-edit"><img src="'.get_template_directory_uri().'/images/edit.png"></button>
-														<button type="submit" class="query-wrapper query-delete"><img src="'.get_template_directory_uri().'/images/delete.png"></button>
-													 </td>';
-												echo '</tr>';
-												$count++;
-											}
-										}
+										// if($RESULTGETS){
+										// 	$count = 1;
+										// 	foreach($RESULTGETS as $R){
+										// 		echo '<tr>';
+										// 		echo '<td align="center">'.$count.'</td>';
+										// 		echo '<td><b>'.$R->s_website.'</b></td>';
+										// 		echo '<td>
+										// 				<button type="submit" class="query-wrapper query-edit"><img src="'.get_template_directory_uri().'/images/edit.png"></button>
+										// 				<button type="submit" class="query-wrapper query-delete"><img src="'.get_template_directory_uri().'/images/delete.png"></button>
+										// 			 </td>';
+										// 		echo '</tr>';
+										// 		$count++;
+										// 	}
+										// }
 									?>
 								</tbody>
 							</table>
 						</td>
 					</tr>
 				</table>
+
+
+				<button>Save and Continue </button>
 			</div> <!-- end tab 2 -->
 			<div id="tab-3" class="ctab-content">
 				<table cellpadding="10" cellspacing="">
@@ -334,52 +306,54 @@
 					</tr>
 					<tr>
 						<td colspan="2">
-							<input type="submit" value="Save" class="btn btn-default">
+							<input type="submit" value="Save" class="btn btn-default" onclick="proceeChatSettings()" >
 						</td>
 					</tr>
 				</table>
 			</div>
 			<div id="tab-4" class="ctab-content">
 				Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+					<!-- multistep form -->
+						<form id="msform" style="display:none">
+							<!-- progressbar -->
+							<ul id="progressbar">
+								<li class="active-step">Account Setup</li>
+								<li>Social Profiles</li>
+								<li>Personal Details</li>
+							</ul>
+							<!-- fieldsets -->
+							<fieldset>
+								<h2 class="fs-title">Create your account</h2>
+								<h3 class="fs-subtitle">This is step 1</h3>
+								<input type="text" name="email" placeholder="Email" />
+								<input type="password" name="pass" placeholder="Password" />
+								<input type="password" name="cpass" placeholder="Confirm Password" />
+								<input type="button" name="next" class="next-step action-button" value="Next" />
+							</fieldset>
+							<fieldset>
+								<h2 class="fs-title">Social Profiles</h2>
+								<h3 class="fs-subtitle">Your presence on the social network</h3>
+								<input type="text" name="twitter" placeholder="Twitter" />
+								<input type="text" name="facebook" placeholder="Facebook" />
+								<input type="text" name="gplus" placeholder="Google Plus" />
+								<input type="button" name="previous" class="previous-step action-button" value="Previous" />
+								<input type="button" name="next" class="next-step action-button" value="Next" />
+							</fieldset>
+							<fieldset>
+								<h2 class="fs-title">Personal Details</h2>
+								<h3 class="fs-subtitle">We will never sell it</h3>
+								<input type="text" name="fname" placeholder="First Name" />
+								<input type="text" name="lname" placeholder="Last Name" />
+								<input type="text" name="phone" placeholder="Phone" />
+								<textarea name="address" placeholder="Address"></textarea>
+								<input type="button" name="previous" class="previous-step action-button" value="Previous" />
+								<input type="submit" name="submit" class="submit action-button" value="Submit" />
+							</fieldset>
+						</form>
 			</div>
 		</div><!-- container -->
-		<!-- multistep form -->
-		<form id="msform">
-			<!-- progressbar -->
-			<ul id="progressbar">
-				<li class="active-step">Account Setup</li>
-				<li>Social Profiles</li>
-				<li>Personal Details</li>
-			</ul>
-			<!-- fieldsets -->
-			<fieldset>
-				<h2 class="fs-title">Create your account</h2>
-				<h3 class="fs-subtitle">This is step 1</h3>
-				<input type="text" name="email" placeholder="Email" />
-				<input type="password" name="pass" placeholder="Password" />
-				<input type="password" name="cpass" placeholder="Confirm Password" />
-				<input type="button" name="next" class="next-step action-button" value="Next" />
-			</fieldset>
-			<fieldset>
-				<h2 class="fs-title">Social Profiles</h2>
-				<h3 class="fs-subtitle">Your presence on the social network</h3>
-				<input type="text" name="twitter" placeholder="Twitter" />
-				<input type="text" name="facebook" placeholder="Facebook" />
-				<input type="text" name="gplus" placeholder="Google Plus" />
-				<input type="button" name="previous" class="previous-step action-button" value="Previous" />
-				<input type="button" name="next" class="next-step action-button" value="Next" />
-			</fieldset>
-			<fieldset>
-				<h2 class="fs-title">Personal Details</h2>
-				<h3 class="fs-subtitle">We will never sell it</h3>
-				<input type="text" name="fname" placeholder="First Name" />
-				<input type="text" name="lname" placeholder="Last Name" />
-				<input type="text" name="phone" placeholder="Phone" />
-				<textarea name="address" placeholder="Address"></textarea>
-				<input type="button" name="previous" class="previous-step action-button" value="Previous" />
-				<input type="submit" name="submit" class="submit action-button" value="Submit" />
-			</fieldset>
-		</form>
+	
 	</div>
 	<!-- jQuery -->
 	<!-- jQuery easing plugin -->
@@ -467,6 +441,7 @@
 		});
 	</script>
 	<script type="text/javascript" src="//code.jquery.com/jquery-1.12.3.js"></script>
+
 	<script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" language="javascript" class="init">
 		jQuery.noConflict();

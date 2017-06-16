@@ -403,9 +403,9 @@
 		file_put_contents($filesrz, $scriptz, LOCK_EX);		
 		$tfilesrc	= OF_FILEPATH . '/js/clients/code/'.$clientid.'.txt';
 		$iframesrc 	= htmlentities('<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<script src="'.get_template_directory_uri( ).'/js/clients/'.$clientid.'.js"></script>
-<script type="text/javascript">
-	$(document).ready(function( ) {
+		<script src="'.get_template_directory_uri( ).'/js/clients/'.$clientid.'.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function( ) {
 		var Vclientid 	= \''.$clientid.'\';
 		var Vhashid	= \''.md5($clientid).'\';
 		var parts = window.location.hostname.split('.');
@@ -433,10 +433,10 @@
 			alert("Error: " + thrownError);
 		   }
 		});
-	});
-</script>
+			});
+		</script>
 
-<div id="chatcontainer"></div>');  
+		<div id="chatcontainer"></div>');  
 		file_put_contents($tfilesrc, $iframesrc, LOCK_EX);		
 		$contents = file_get_contents($tfilesrc);		
 		echo $contents . ' ';
@@ -459,4 +459,32 @@
 		
 		return $RESULTGETS;
 	}
+
+	add_action('wp_ajax_processWebsite', 'processWebsite');
+	function processWebsite() 
+	{	 
+		$action = $_POST['action']; 
+
+ 		switch ($action) {
+ 			
+ 			case 'Add Site': 
+ 					print "add new site"; 
+ 				break; 
+			case 'Edit Site': 
+ 					print "edit new site"; 
+ 				break;  
+			case 'Delete Site':
+ 					print "delete new site";  
+			break;   
+ 			default: 
+ 					print "default";
+ 				break;
+ 		}
+
+	}
+
+
+
+
+
 ?>
