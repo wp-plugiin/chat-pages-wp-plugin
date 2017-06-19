@@ -5,10 +5,9 @@
 	 */
     
 	 get_header(); 
-	 
-	 require_once ('live_chat_settings_helper.php'); 
-	 require_once ('live_chat_settings_ajax.php');  
-  
+	  
+	 require_once ('live_chat_settings_ajax.php'); 
+
  	global $wpdb;
  
 	if(!is_user_logged_in()) {
@@ -67,6 +66,11 @@
 		$getUserCO	= "SELECT * FROM ".$wpdb->prefix."chat_options WHERE co_accountid = '".$getName->data[0]->id."'";
 		$getRowsCO	= $wpdb->get_row($getUserCO);
 
+		/**
+		 * Jesus Functions
+		 */ 
+		$liveChatSettings	= new LiveChatSettings(new CHAT_QUERIES\Chat_Queries('wp_clientsites'), 'wp_clientsites');  
+
 ?>
 
 	<div id="page-content">
@@ -89,10 +93,7 @@
 					</div>
 					<div class="cmodal-body" style="text-align:center"></div>
 				</div>
-			</div>
-
-
-
+			</div> 
 			<div id="tab-1" class="ctab-content  transaction-query">
 				<form id="manageicons" type="post" action="">
 				<input type="hidden" id="p_clientid" name="p_clientid" value="<?php echo $getName->data[0]->id; ?>" />
@@ -177,7 +178,13 @@
 			</div>
 
 			
-			<div id="tab-2" class="ctab-content current">
+			<div id="tab-2" class="ctab-content current"> 
+
+				<?php  
+					$domains = $liveChatSettings->getClientSites(getCurrentLogggedInAccountId()); 
+					$domain_total  = count($domains);   
+				?> 
+
 				<table cellpadding="10" cellspacing="">
 					<tr>
 						<td style="vertical-align:middle">
@@ -190,20 +197,16 @@
 							<button type="button" id="pnw-domain-add-button" class="query-wrapper query-add" ><img src="<?php echo get_template_directory_uri().'/images/add.png';?>"  onclick="processWebsite('Add Domain')" ></button>
  
 							<!-- edit domain -->
-							<button type="button" id="pnw-domain-update-button" class="query-wrapper query-add" style="display:none" ><img src="<?php echo get_template_directory_uri().'/images/add.png';?>"  onclick="processWebsite('Update Domain')" ></button>
-							 
+							<button type="button" id="pnw-domain-update-button" class="query-wrapper query-add" style="display:none" ><img src="<?php echo get_template_directory_uri().'/images/add.png';?>"  onclick="processWebsite('Update Domain')" ></button> 
 							<div id="pnw-adding-domain-message"> </div>
 						</td>
 					</tr>
 					<tr>
-						<td colspan="2"> 
-							
-							<input type="text" id="pnw-total-site" value="0" />
-							<input type="text" id="pnw-total-site-counter" value="0" />
-						
-						<form id="pnw_form" action="" method="POST" > 
-								
-							<input type="text" value="process_domain" name="action" />
+						<td colspan="2">  
+							<input type="hidden" id="pnw-total-site" value="<?php print $domain_total; ?>" />
+							<input type="hidden" id="pnw-total-site-counter" value="<?php print $domain_total; ?>" /> 
+						<form id="pnw_form" action="" method="POST" >  
+							<input type="hidden" value="process_domain" name="action" />
 							<table id="web_list" class="display" cellspacing="0">
 								<thead>
 									<tr>
@@ -214,9 +217,19 @@
 										<th class="no-sort" bgcolor="#CCCCCC" >Delete</th>
 									</tr>
 								</thead>
-								<tbody> 
+								<tbody>   
+									<?php    
 
+										foreach($domains as $domain) {   
 
+											$partner_id = $domain['s_ID'];
+											$domain     = $domain['s_website'];
+
+											echo "<tr id='pnw-domain-container-$partner_id'><td>$partner_id</td><td><span id='pnw-domain-text-$partner_id' >$domain</span><input type='hidden' value='$domain' name='pnw_domain_values[]' id='pnw-domain-value-$partner_id' /></td><td>Active</td><td><button type='button'  onclick='processWebsite(\"Edit Domain\", $partner_id )' >Edit</button></td><td><button type='button' onclick='processWebsite(\"Delete Domain\", $partner_id )'>Delete</button></td></tr>";
+
+										} 
+
+									?>  
 									<!-- <tr id="pnw-domain-conteiner-1" >
 										<td>
 											1 
@@ -232,8 +245,7 @@
 										<td><button onclick="processWebsite('Delete Domain', 1)">Delete</button></td> 
 									</tr> -->
 								
-
-
+ 
 									<?php
 										// if($RESULTGETS){
 										// 	$count = 1;
@@ -262,7 +274,9 @@
 					</tr>
 				</table>
 
-				<div id="pnw-save-domain-loader" style="display:none">Saving...</div>
+				<div id="pnw-save-domain-loader" style="display:none">  
+					<img src="http://testing.umbrellasupport.co.uk/wp-content/uploads/2016/07/preload.gif" /> 
+				</div>
 				<button onclick="processWebsite('Save And Continue')">Save and Continue </button>
 			</div> <!-- end tab 2 -->
 			<div id="tab-3" class="ctab-content">

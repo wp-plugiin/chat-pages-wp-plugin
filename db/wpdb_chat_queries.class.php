@@ -35,6 +35,8 @@ class Chat_Queries
      */
     public function wpdb_get_result($query_string, $output_type = ARRAY_A)
     {
+
+        // print " db query " . $query_string;
         global $wpdb;
         return $wpdb->get_results($query_string, $output_type);
     }

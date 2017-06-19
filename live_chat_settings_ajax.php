@@ -144,6 +144,9 @@ function processWebsite(action, id)
 
 		case 'Edit Domain':  
 
+				console.log( " id " + id + " Domain Value " + $("#pnw-domain-value-"+id).val()); 
+
+
  				// Get domain from display text and Add domain in the field to update
  				$('#pdw-domain-validation').val($("#pnw-domain-value-"+id).val()); 
 
