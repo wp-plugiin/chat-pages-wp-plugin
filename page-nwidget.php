@@ -2,11 +2,18 @@
 
 	/**
 	 * Template Name: Chat Settings Page
+     *
+     * Database table
+     * wp_clientsites - where sites saved
+     * wp_chat_icons - icon selected saved
+     * wp_chat_options - options for chat
+     * wp_widgetoptions
 	 */
     
 	 get_header(); 
 	  
 	 require_once ('live_chat_settings_ajax.php'); 
+	 require_once ('live_chat_settings_helper.php');
 
  	global $wpdb;
  
@@ -74,16 +81,19 @@
 ?>
 
 	<div id="page-content">
+	
+			<link rel="stylesheet" type="text/css" href="<?php echo get_template_directory_uri(); ?>/chat-pages/assets/css/pnw_style.css" />
+ 
 		<h2><?php echo $chat_settings_page_title; ?></h2>
 		<p>
 			<?php echo $chat_settings_title_description; ?>
 		</p> 
 		<div class="chat-container">
 			<ul class="ctabs">
-				<li class="ctab-link  transact-none" data-tab="tab-1" id="menu-tab-1" ><b>Chat Icons</b><span>(Step 1)</span></li>
-				<li class="ctab-link current transact-none" data-tab="tab-2" id="menu-tab-2" ><b>Websites</b><span>(Step 2)</span></li></li>
-				<li class="ctab-link transact-none" data-tab="tab-3" id="menu-tab-3" ><b>Chat Settings</b><span>(Step 3)</span></li>
-				<li class="ctab-link transact-none" data-tab="tab-4" id="menu-tab-4" ><b>Generated Script</b><span>(Step 4)</span></li>
+				<li class="ctab-link current transact-none" data-tab="tab-1" id="menu-tab-1" data-visited="active" ><b>Chat Icons</b><span>(Step 1)</span></li>
+				<li class="ctab-link transact-none" data-tab="tab-2" id="menu-tab-2" data-visited="" ><b>Websites</b><span>(Step 2)</span></li></li>
+				<li class="ctab-link transact-none" data-tab="tab-3" id="menu-tab-3" data-visited="" ><b>Chat Settings</b><span>(Step 3)</span></li>
+				<li class="ctab-link transact-none" data-tab="tab-4" id="menu-tab-4" data-visited="" ><b>Generated Script</b><span>(Step 4)</span></li>
 			</ul>
 			<div class="cmodal" id="modal-one" aria-hidden="true">
 				<div class="cmodal-dialog">
@@ -94,7 +104,7 @@
 					<div class="cmodal-body" style="text-align:center"></div>
 				</div>
 			</div> 
-			<div id="tab-1" class="ctab-content  transaction-query">
+			<div id="tab-1" class="ctab-content current transaction-query">
 				<form id="manageicons" type="post" action="">
 				<input type="hidden" id="p_clientid" name="p_clientid" value="<?php echo $getName->data[0]->id; ?>" />
                     <p>
@@ -122,7 +132,7 @@
                         $images = $wpdb->get_results($query);
 
                         if(count($images)>0){
-                            echo '<div style="width: 100%; margin: 0 auto; clear: both; margin-bottom: 50px; padding: 10px 50px;">';
+                            echo '<div style="width: 100%; margin: 0 auto; clear: both; margin-bottom: 50px; padding: 10px 50px;" id="pnw-select-div" >';
                                 $reccount 	= 0;
                                 $incnum		= 1;
                                 $maxCount   = sizeof($images);
@@ -140,7 +150,7 @@
                                         echo '<section class="container">';
                                         echo '<div class="switch switch-blue">';
                                         echo '<input onClick="disablefields()" type="radio" class="switch-input" id="S_CI_'.$incnum.'" name="p_cicon" value="'.$img->guid.'" '.($getRowsCI->ci_buttontype == "DEFAULT" && $getRowsCI->ci_imgpathoff == $img->guid ? "checked" : "").'>';
-                                        echo '<label for="S_CI_'.$incnum.'" class="switch-label switch-label-on">Select</label>';
+                                        echo '<label for="S_CI_'.$incnum.'" class="switch-label switch-label-on" id="pnw-select" >Select</label>';
                                         echo '<span class="switch-selection"></span>';
                                         echo '</div>';
                                         echo '</section>';
@@ -156,7 +166,7 @@
                                         echo '<section class="container">';
                                         echo '<div class="switch switch-blue">';
                                         echo '<input  onClick="disablefields()" type="radio" class="switch-input" id="S_CI_'.$incnum.'" name="p_cicon" value="'.$img->guid.'" '.($getRowsCI->ci_buttontype == "DEFAULT" && $getRowsCI->ci_imgpathoff == $img->guid ? "checked" : "").'>';
-                                        echo '<label for="S_CI_'.$incnum.'" class="switch-label switch-label-on">Select</label>';
+                                        echo '<label for="S_CI_'.$incnum.'" class="switch-label switch-label-on" id="pnw-select" >Select</label>';
                                         echo '<span class="switch-selection"></span>';
                                         echo '</div>';
                                         echo '</section>';
@@ -170,6 +180,8 @@
                             echo "<h2>There are no images found in the gallery.</h2>";
                         }
                     ?>
+			
+                    <div style="clear:both">   </div>
                     <div id="error_container"></div><br />
                     <div id="preloader"  style="height: 40px;display: none;" ><img src="http://testing.umbrellasupport.co.uk/wp-content/uploads/2016/07/preload.gif" /></div>
                     <input type="hidden" name="action" value="process_icons"/> 
@@ -178,7 +190,7 @@
 			</div>
 
 			
-			<div id="tab-2" class="ctab-content current"> 
+			<div id="tab-2" class="ctab-content  content-tab-2"> 
 
 				<?php  
 					$domains = $liveChatSettings->getClientSites(getCurrentLogggedInAccountId()); 
@@ -187,19 +199,29 @@
 
 				<table cellpadding="10" cellspacing="">
 					<tr>
-						<td style="vertical-align:middle">
+						<td style="vertical-align:middle;width: 20%;padding-bottom: 40px;">
 							<b>Input Website Address:</b>
 						</td>
 						<td>
-							<i>http://</i> <input id="pdw-domain-validation" type="text" name="" value="" class="search"  >  
- 
-							<!-- add domain -->
-							<button type="button" id="pnw-domain-add-button" class="query-wrapper query-add" ><img src="<?php echo get_template_directory_uri().'/images/add.png';?>"  onclick="processWebsite('Add Domain')" ></button>
- 
-							<!-- edit domain -->
-							<button type="button" id="pnw-domain-update-button" class="query-wrapper query-add" style="display:none" ><img src="<?php echo get_template_directory_uri().'/images/add.png';?>"  onclick="processWebsite('Update Domain')" ></button> 
-							<div id="pnw-adding-domain-message"> </div>
-						</td>
+							<table style="width: 60% !important;float: left !important;">
+								<tbody>
+									<tr>
+										<td style="width: 100px;"> 
+	  										<i>http://</i> 
+	  										<input id="pdw-domain-validation" type="text" name="" value="" class="search" style="padding: 2px;">   
+    									</td> 
+    									<td>  
+  											<button type="button" id="pnw-domain-add-button" class="query-wrapper query-add" style="display: block;">
+  											<img src="<?php echo get_template_directory_uri().'/images/add.png';?>" onclick="processWebsite('Add Domain')" style="height: 23px;">
+  
+  												</button> <button type="button" id="pnw-domain-update-button" class="query-wrapper query-add" style="display: none;"><img src="http://icons.iconarchive.com/icons/custom-icon-design/mono-general-2/256/edit-icon.png" onclick="processWebsite('Update Domain')" style="height: 23px;"></button><div id="pnw-adding-domain-message">  
+						      				</div>
+
+						      			</td> 
+						      		</tr>
+						      	</tbody>
+      						</table> 
+						</td>   
 					</tr>
 					<tr>
 						<td colspan="2">  
@@ -277,13 +299,19 @@
 				<div id="pnw-save-domain-loader" style="display:none">  
 					<img src="http://testing.umbrellasupport.co.uk/wp-content/uploads/2016/07/preload.gif" /> 
 				</div>
-				<button onclick="processWebsite('Save And Continue')">Save and Continue </button>
+				
+				<!-- <button id="bigbutton" onclick="processWebsite('Save And Continue')">Save and Continue </button> -->
+				<input type="button" id="bigbutton" onclick="processWebsite('Save And Continue')" value="Save and Continue">
+
+
 			</div> <!-- end tab 2 -->
 			<div id="tab-3" class="ctab-content">
 				<table cellpadding="10" cellspacing="">
 					<tr>
 						<td>
-							Chat Type
+							<b>
+								Chat Type
+							</b>
 						</td>
 						<td>
 							<input type="radio" value="1" name="LC_OPT" <?php echo ($getRowsCO->co_chatformat == 1 ? "checked" : ""); ?> required/> Chat Bar with Image Icon above <br />
@@ -294,7 +322,9 @@
 					</tr>
 					<tr>
 						<td>
-							Window Chat Type
+							<b>
+								Window Chat Type
+							</b>
 						</td>
 						<td>
 							<div class="switch-field">
@@ -307,7 +337,9 @@
 					</tr>
 					<tr>
 						<td>
-							Enable Pro-Active Popup Invitation
+							<b>
+								Enable Pro-Active Popup Invitation
+							</b>
 						</td>
 						<td>
 							<div class="switch-field">
@@ -320,7 +352,9 @@
 					</tr>
 					<tr>
 						<td>
-							Enable Pop-up on Page Close
+							<b>
+								Enable Pop-up on Page Close
+							</b>
 						</td>
 						<td>
 							<div class="switch-field">
@@ -333,7 +367,7 @@
 					</tr>
 					<tr>
 						<td colspan="2">
-							<input type="submit" value="Save" class="btn btn-default" onclick="proceeChatSettings()" >
+							<input type="button" id="bigbutton" onclick="proceeChatSettings()" value="Save and Continue"> 
 						</td>
 					</tr>
 				</table>

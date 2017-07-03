@@ -1,8 +1,8 @@
-<?php  
-
-	require_once ('live_chat_settings_helper.php'); 
+<?php
+    require_once ('live_chat_settings_helper.php');
     require_once("db/wpdb_chat_queries.class.php");
     require_once("db/LiveChatSettings.php");  
+
 
     use CHAT_QUERIES\Chat_Queries;  
 
@@ -53,7 +53,7 @@
 		global $wpdb;
 		$ERR_MSG_NOICON		= "Live Chat Icons must be selected.";
 		$ERR_MSG_NOCICON	= "Custom Live Chat Icons must have valid Image URL.";
-		$ERR_MSG_FAIL		= "Your chat has not made any changes. If you feel that this error needs help, please feel free to contact us.";
+		$ERR_MSG_FAIL		= "1 Your chat has not made any changes. If you feel that this error needs help, please feel free to contact us.";
 		$ERR_MSG_IMGNF		= "Custom Chat Icon does not have a valid Image URL.";
 		$ERR_MSG_IMGSIZE	= "Custom Images must have 200px by 100px dimensions.";
 		$ERR_MSG_NOTREG		= "Your account is not associated with our backend system.";
@@ -204,16 +204,19 @@
 	add_action('wp_ajax_processwidget', 'processwidget');
 	
 	function process_icons(){
+ 		
+
+
 		global $wpdb;
 		
 		$ERR_MSG_NOICON		= "Please select a Live Chat Icons before you can proceed.";
 		$ERR_MSG_NOCICON	= "Custom Live Chat Icons must have valid Image URL.";
-		$ERR_MSG_FAIL		= "Your chat has not made any changes. If you feel that this error needs help, please feel free to contact us.";
+		$ERR_MSG_FAIL		= "2 Your chat has not made any changes. If you feel that this error needs help, please feel free to contact us.";
 		$ERR_MSG_IMGNF		= "Custom Chat Icon does not have a valid Image URL.";
 		$ERR_MSG_IMGSIZE	= "Custom Images must have 200px by 100px dimensions.";
 		$ERR_MSG_NOTREG		= "Your account is not associated with our backend system.";	
 		
-		$P_V_CID			= $_POST[ 'p_clientid' ];
+		$P_V_CID			=  (pnw_is_local() == true) ? 77333 : $_POST[ 'p_clientid' ];
 		$P_V_ICON 			= $_POST[ 'p_cicon' ];
 		$P_V_CICON 			= $_POST[ 'p_obut' ];
 		$P_V_CICOURLON 		= $_POST[ 'p_cctxt1' ];
@@ -479,18 +482,20 @@
  
 		// Get serialized post request
 		$request = $_REQUEST;
- 
+		
 		// For each request  
-		foreach($request['pnw_domain_values'] as $pnw_domain_value) { 
-			$chat_queries->wpdb_insert(
-				[
-					's_accountid'=>getCurrentLogggedInAccountId(), 
-					's_website' => $pnw_domain_value, 
-					's_accountidhash' => base64_encode(getCurrentLogggedInAccountId()),
-					's_status' => 1
-				]
-			);
-		}  
+		if(!empty($request['pnw_domain_values'])) {  
+			foreach($request['pnw_domain_values'] as $pnw_domain_value) { 
+				$chat_queries->wpdb_insert(
+					[
+						's_accountid'=>getCurrentLogggedInAccountId(), 
+						's_website' => $pnw_domain_value, 
+						's_accountidhash' => base64_encode(getCurrentLogggedInAccountId()),
+						's_status' => 1
+					]
+				);
+			}  
+		}
 
 		return 'success';
  	 	  
@@ -529,8 +534,5 @@
 
 		} 
 	}
-
-	
-
-
+  
 ?>

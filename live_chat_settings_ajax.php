@@ -1,14 +1,43 @@
 <script>
 $(document).ready(function()
-{
+{ 
 
+	// When click Yes or No for "Have your own buttons?", it should remove the selected icon and restore to normal ui
+	$("#S_OB_R1, #S_OB_L1").click(function(){  
+
+		// Set not clicked select in step 1 to visible and can be clickable again  
+		$("#pnw-select-div label").each(function( index  ){  
+			$(this).css('z-index','2');   
+		});  
+
+	})
+
+	// Click the select button in step 1
+	$("#pnw-select-div #pnw-select").click(function(){ 
+
+		// Set not clicked select in step 1 to visible and can be clickable again  
+		$("#pnw-select-div label").each(function( index  ){  
+			$(this).css('z-index','2');   
+		});  
+
+		// Set clicked selected as in backward
+		$(this).css('z-index', '0');  
+
+	}); 
+ 
 	$('ul.ctabs li').click(function(){
-		var tab_id = $(this).attr('data-tab');
-		$('ul.ctabs li').removeClass('current');
-		$('.ctab-content').removeClass('current');
 
-		$(this).addClass('current');
-		$("#"+tab_id).addClass('current');
+		// check tab with 
+		if($(this).attr('data-visited') == 'active') {   
+
+			var tab_id = $(this).attr('data-tab');
+			$('ul.ctabs li').removeClass('current');
+			$('.ctab-content').removeClass('current'); 
+			$(this).addClass('current');
+			$("#"+tab_id).addClass('current');
+
+		}
+ 
 	});
 
 	disablefields();
@@ -68,8 +97,15 @@ function processicons()
            response.indexOf("success") > -1
         ) {    
 
+
 		 	console.log("success");  
-			changeTab('open tab 2'); 
+			changeTab('open tab 2');  
+			
+			// Set current tab visited and can be visited by time to time
+			$("#menu-tab-2").attr('data-visited', 'active');
+
+			// add data-visited attribute to active in step 1
+
 
 		 } else { 
 
@@ -112,10 +148,13 @@ function processWebsite(action, id)
 				var total  = document.getElementById('pnw-total-site');   
 				var total_counter  = document.getElementById('pnw-total-site-counter');   
 
+				// Hide empty text when no domain found and added new domain
+				$(".dataTables_empty").css('display', 'none');  
+
 				if (isValidURL(domain)) {   
 
 					if(total_counter.value < 5) {  
-
+ 
 	 					// Increment total sites 
 						total.value = parseInt(total.value) + 1 ; 
 
@@ -125,6 +164,9 @@ function processWebsite(action, id)
 	  					// Append new html 
 						$("#web_list tbody").append("<tr id='pnw-domain-container-"+total.value+"'><td>" + total.value + "</td><td><span id='pnw-domain-text-"+total.value+"' >"+domain+"</span><input type='hidden' value='"+domain+"' name='pnw_domain_values[]' id='pnw-domain-value-"+total.value+"' /></td><td>Active</td><td><button type='button'  onclick='processWebsite(\"Edit Domain\", "+total.value+")' >Edit</button></td><td><button type='button' onclick='processWebsite(\"Delete Domain\", "+total.value+")'>Delete</button></td></tr>");  
 
+					 		// Clean the domain field
+ 							$('#pdw-domain-validation').val('');
+						  
 					} else {	  
 
 						alert(total_counter.value + " domain allowed for now.");
@@ -212,6 +254,9 @@ function processWebsite(action, id)
 				   		if(response == 'success' || response== 0) { 
 					   		// Alert response
 					   		console.log(response);  
+  							
+  							// Set current tab visited and can be visited by time to time
+					   		$("#menu-tab-3").attr("data-visited", 'active'); 
  
 	 						// Proceed to tab 4
 	 						changeTab('open tab 3');
@@ -266,6 +311,9 @@ function processWebsite(action, id)
  */
 function proceeChatSettings()
 { 
+
+	// Set current tab visited and can be visited by time to time
+	$("#menu-tab-4").attr("data-visited", "active");
 
 	changeTab('open tab 4'); 
 }
