@@ -3,7 +3,7 @@
     require_once("db/wpdb_chat_queries.class.php");
     require_once("db/LiveChatSettings.php");  
 
-
+ 
     use CHAT_QUERIES\Chat_Queries;  
 
 
@@ -504,11 +504,8 @@
 	function getCurrentLogggedInAccountId() 
 	{
 		if(pnw_is_local() == true) {  
-
 			return 77333; 
-
 		} else {
-
 			$current_user = wp_get_current_user();
 
 			$API_URL	= 'http://api.ontraport.com/1/objects?';
@@ -531,8 +528,50 @@
 			$getName = json_decode($API_RESULT); 
 
 			return $getName->data[0]->id; 
-
 		} 
 	}
+ 	 
+ 	add_action('wp_ajax_save_chat_settings', 'save_chat_settings');
+ 	/**
+ 	* Chat settings save or update
+ 	*/ 
+	function save_chat_settings() 
+	{ 
+		$chat_queries = new Chat_Queries('wp_chat_options'); 
+
+		$partner_id = getCurrentLogggedInAccountId();
+
+		$request = $_REQUEST;
+ 
+		$chatSettings = [ 		
+			'co_chatformat' => ($request['LC_OPT'] != null) ? $request['LC_OPT'] : 1,
+			'co_chattype'   => $request['p_cwchat'],
+			'co_proactive'  => $request['p_cpactive'],
+			'co_exitpop'    => $request['p_cexitpop'] 
+		]; 
+
+		$results = $chat_queries->wpdb_get_result("select * from wp_chat_options where co_accountid = " . $partner_id); 
   
+		if(!empty($results)) {  
+			$status = $chat_queries->wpdb_update(
+				$chatSettings,
+				[
+					'co_accountid'=> $partner_id
+				]
+			); 
+   
+		} else {  
+
+			$chatSettings['co_accountid'] = $partner_id;
+			
+			print_r($chatSettings); 
+
+			$status = $chat_queries->wpdb_insert($chatSettings);
+
+			if($status)
+				print "insert success";
+			else 
+				print "insert failed";
+		}  
+	} 
 ?>

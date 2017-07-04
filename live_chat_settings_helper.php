@@ -9,3 +9,12 @@ if(!function_exists('pnw_is_local')) {
 	    }
 	}
 }
+
+
+if(!function_exists("pnw_print_r_pre")) {
+	function pnw_print_r_pre($array) {
+		print "<pre>";
+			print_r($array); 
+		print "</pre>"; 
+	}
+}

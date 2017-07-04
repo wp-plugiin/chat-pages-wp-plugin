@@ -16,7 +16,7 @@
 	 require_once ('live_chat_settings_helper.php');
 
  	global $wpdb;
- 
+ 	
 	if(!is_user_logged_in()) {
 
 		echo '<center><h1>Please login to view this page</h1></center>';
@@ -41,6 +41,7 @@
 			$API_ID							 = '2_7818_ubHppKG8C';   
 			$chat_settings_page_title   	 = 'Live Chat Settings Title'; 
 			$chat_settings_title_description = 'Live Chat Settings Desc';  
+			$getName->data[0]->id            = 77333; 
 
 		} else {
 
@@ -63,6 +64,9 @@
 			} 
 
 		}
+
+
+		
  
 		$QUEGETSITE = "SELECT * FROM " . $wpdb->prefix . "clientsites WHERE s_accountid='" . $getName->data[0]->id . "'";
 		$RESULTGETS = $wpdb->get_results($QUEGETSITE);
@@ -72,11 +76,16 @@
 
 		$getUserCO	= "SELECT * FROM ".$wpdb->prefix."chat_options WHERE co_accountid = '".$getName->data[0]->id."'";
 		$getRowsCO	= $wpdb->get_row($getUserCO);
+ 
+ 		// pnw_print_r_pre($getRowsCO); 
 
 		/**
 		 * Jesus Functions
 		 */ 
 		$liveChatSettings	= new LiveChatSettings(new CHAT_QUERIES\Chat_Queries('wp_clientsites'), 'wp_clientsites');  
+
+
+		print " co_chatformat = " . $getRowsCO->co_chatformat; 
 
 ?>
 
@@ -306,113 +315,93 @@
 
 			</div> <!-- end tab 2 -->
 			<div id="tab-3" class="ctab-content">
-				<table cellpadding="10" cellspacing="">
-					<tr>
-						<td>
-							<b>
-								Chat Type
-							</b>
-						</td>
-						<td>
-							<input type="radio" value="1" name="LC_OPT" <?php echo ($getRowsCO->co_chatformat == 1 ? "checked" : ""); ?> required/> Chat Bar with Image Icon above <br />
-							<input type="radio" value="2" name="LC_OPT" <?php echo ($getRowsCO->co_chatformat == 2 ? "checked" : ""); ?>> Chat Bar with separate Image Icon <br />
-							<input type="radio" value="3" name="LC_OPT" <?php echo ($getRowsCO->co_chatformat == 3 ? "checked" : ""); ?>> Chat Bar only <br />
-							<input type="radio" value="4" name="LC_OPT" <?php echo ($getRowsCO->co_chatformat == 4 ? "checked" : ""); ?>> Default Chat Settings <br />
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<b>
-								Window Chat Type
-							</b>
-						</td>
-						<td>
-							<div class="switch-field">
-								<input type="radio" id="S_TWC_L1" name="p_cwchat" value="1" <?php echo ($getRowsCO->co_chattype == 1 ? "checked" : ""); ?> required/>
-								<label for="S_TWC_L1">Pop-up</label>&nbsp;&nbsp;
-								<input type="radio" id="S_TWC_R1" name="p_cwchat" value="0" <?php echo ($getRowsCO->co_chattype == 0 ? "checked" : ""); ?>/>
-								<label for="S_TWC_R1">Window</label>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<b>
-								Enable Pro-Active Popup Invitation
-							</b>
-						</td>
-						<td>
-							<div class="switch-field">
-								<input type="radio" id="S_TWC_L2" name="p_cpactive" value="1" <?php echo ($getRowsCO->co_proactive == 1 ? "checked" : ""); ?> required/>
-								<label for="S_TWC_L2">Yes</label>&nbsp;&nbsp;
-								<input type="radio" id="S_TWC_R2" name="p_cpactive" value="0" <?php echo ($getRowsCO->co_proactive == 0 ? "checked" : ""); ?> />
-								<label for="S_TWC_R2">No</label>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<b>
-								Enable Pop-up on Page Close
-							</b>
-						</td>
-						<td>
-							<div class="switch-field">
-								<input type="radio" id="S_TWC_L3" name="p_cexitpop" value="1" <?php echo ($getRowsW->wid_exitpop == 1 ? "checked" : ""); ?> required/>
-								<label for="S_TWC_L3">Yes</label>&nbsp;&nbsp;
-								<input type="radio" id="S_TWC_R3" name="p_cexitpop" value="0" <?php echo ($getRowsW->wid_exitpop == 0 ? "checked" : ""); ?> />
-								<label for="S_TWC_R3">No</label>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2">
-							<input type="button" id="bigbutton" onclick="proceeChatSettings()" value="Save and Continue"> 
-						</td>
-					</tr>
-				</table>
-			</div>
-			<div id="tab-4" class="ctab-content">
-				Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
-					<!-- multistep form -->
-						<form id="msform" style="display:none">
-							<!-- progressbar -->
-							<ul id="progressbar">
-								<li class="active-step">Account Setup</li>
-								<li>Social Profiles</li>
-								<li>Personal Details</li>
-							</ul>
-							<!-- fieldsets -->
-							<fieldset>
-								<h2 class="fs-title">Create your account</h2>
-								<h3 class="fs-subtitle">This is step 1</h3>
-								<input type="text" name="email" placeholder="Email" />
-								<input type="password" name="pass" placeholder="Password" />
-								<input type="password" name="cpass" placeholder="Confirm Password" />
-								<input type="button" name="next" class="next-step action-button" value="Next" />
-							</fieldset>
-							<fieldset>
-								<h2 class="fs-title">Social Profiles</h2>
-								<h3 class="fs-subtitle">Your presence on the social network</h3>
-								<input type="text" name="twitter" placeholder="Twitter" />
-								<input type="text" name="facebook" placeholder="Facebook" />
-								<input type="text" name="gplus" placeholder="Google Plus" />
-								<input type="button" name="previous" class="previous-step action-button" value="Previous" />
-								<input type="button" name="next" class="next-step action-button" value="Next" />
-							</fieldset>
-							<fieldset>
-								<h2 class="fs-title">Personal Details</h2>
-								<h3 class="fs-subtitle">We will never sell it</h3>
-								<input type="text" name="fname" placeholder="First Name" />
-								<input type="text" name="lname" placeholder="Last Name" />
-								<input type="text" name="phone" placeholder="Phone" />
-								<textarea name="address" placeholder="Address"></textarea>
-								<input type="button" name="previous" class="previous-step action-button" value="Previous" />
-								<input type="submit" name="submit" class="submit action-button" value="Submit" />
-							</fieldset>
-						</form>
+				<form action="#" method="post" id="pnw_chat_settings" >
+
+				<input type="hidden" value="save_chat_settings" name="action" />
+
+					<table cellpadding="10" cellspacing="">
+						<tr>
+							<td>
+								<b>
+									Chat Type
+								</b>
+							</td>
+							<td>
+								<input type="radio" value="1" name="LC_OPT" <?php echo ($getRowsCO->co_chatformat == 1 or $getRowsCO->co_chatformat == null) ? "checked" : ""; ?> required/> Chat Bar with Image Icon above <br />
+								<input type="radio" value="2" name="LC_OPT" <?php echo ($getRowsCO->co_chatformat == 2 ? "checked" : ""); ?>> Chat Bar with separate Image Icon <br />
+								<input type="radio" value="3" name="LC_OPT" <?php echo ($getRowsCO->co_chatformat == 3 ? "checked" : ""); ?>> Chat Bar only <br />
+								<input type="radio" value="4" name="LC_OPT" <?php echo ($getRowsCO->co_chatformat == 4 ? "checked" : ""); ?>> Default Chat Settings <br />
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<b>
+									Window Chat Type
+								</b>
+							</td>
+							<td>
+								<div class="switch-field">
+									<input type="radio" id="S_TWC_L1" name="p_cwchat" value="1" <?php echo ($getRowsCO->co_chattype == 1 ? "checked" : ""); ?> required/>
+									<label for="S_TWC_L1">Pop-up</label>&nbsp;&nbsp;
+									<input type="radio" id="S_TWC_R1" name="p_cwchat" value="0" <?php echo ($getRowsCO->co_chattype == 0 ? "checked" : ""); ?>/>
+									<label for="S_TWC_R1">Window</label>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<b>
+									Enable Pro-Active Popup Invitation
+								</b>
+							</td>
+							<td>
+								<div class="switch-field">
+									<input type="radio" id="S_TWC_L2" name="p_cpactive" value="1" <?php echo ($getRowsCO->co_proactive == 1 ? "checked" : ""); ?> required/>
+									<label for="S_TWC_L2">Yes</label>&nbsp;&nbsp;
+									<input type="radio" id="S_TWC_R2" name="p_cpactive" value="0" <?php echo ($getRowsCO->co_proactive == 0 ? "checked" : ""); ?> />
+									<label for="S_TWC_R2">No</label>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<b>
+									Enable Pop-up on Page Close
+								</b>
+							</td>
+							<td> 
+								<div class="switch-field">
+									<input type="radio" id="S_TWC_L3" name="p_cexitpop" value="1" <?php echo ($getRowsCO->co_exitpop == 1 ? "checked" : ""); ?> required/>
+									<label for="S_TWC_L3">Yes</label>&nbsp;&nbsp;
+									<input type="radio" id="S_TWC_R3" name="p_cexitpop" value="0" <?php echo ($getRowsCO->co_exitpop == 0 ? "checked" : ""); ?> />
+									<label for="S_TWC_R3">No</label>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+
+								<div id="pnw-chat-settings-loader" style="display:none">  
+									<img src="http://testing.umbrellasupport.co.uk/wp-content/uploads/2016/07/preload.gif" /> 
+								</div>
+								
+								<input type="button" id="bigbutton" onclick="proceeChatSettings()" value="Save and Continue"> 
+							</td>
+						</tr>
+					</table>
+
+				</form>
+
+
+
+
 			</div>
+
+			<div id="tab-4" class="ctab-content">
+				Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+			</div>
+
 		</div><!-- container -->
 	
 	</div>

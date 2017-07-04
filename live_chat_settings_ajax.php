@@ -310,12 +310,62 @@ function processWebsite(action, id)
  *  Step 3 hit save then should validate some fields 
  */
 function proceeChatSettings()
-{ 
+{  
 
-	// Set current tab visited and can be visited by time to time
-	$("#menu-tab-4").attr("data-visited", "active");
+				console.log("proceess chat settings"); 
+				// Set current tab visited and can be visited by time to time
+				//$("#menu-tab-4").attr("data-visited", "active");
 
-	changeTab('open tab 4'); 
+				//changeTab('open tab 4'); 
+
+
+				// Get all the domain in serialized format 
+				var data = $("#pnw_chat_settings").serialize(); 
+ 	
+ 				console.log(data); 
+
+				// Show loader
+			 	$("#pnw-chat-settings-loader").css("display", "block");
+
+				// Send all the domain via REST API_KEYI in serialized format   
+				jQuery.ajax({
+				   
+				   type: "POST", // HTTP method POST or GET
+				   
+				   url: "<?php echo admin_url('admin-ajax.php'); ?>", // Where to make Ajax calls
+ 				   
+				   data:data,
+
+				   success:function(response) { 
+ 
+				   		if(response == 'success' || response== 0) {  
+  							// Set current tab visited and can be visited by time to time
+					   		$("#menu-tab-3").attr("data-visited", 'active'); 
+					   		$("#menu-tab-4").attr("data-visited", 'active'); 
+  
+	 						changeTab('open tab 4');
+ 						}
+
+						// Hide loader
+ 					 	$("#pnw-chat-settings-loader").css("display", "none"); 
+
+				   },
+
+				   error:function (xhr, ajaxOptions, thrownError){
+
+						alert("Error: " + thrownError);
+					 	$("#pnw-chat-settings-loader").css("display", "none");
+
+				   },
+
+				   complete: function(){
+			 			
+			 			$("#pnw-chat-settings-loader").css("display", "none"); 
+
+				   }
+
+				});
+
 }
  
 /**
