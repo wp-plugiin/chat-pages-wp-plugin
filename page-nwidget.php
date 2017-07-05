@@ -114,6 +114,11 @@
 				</div>
 			</div> 
 			<div id="tab-1" class="ctab-content current transaction-query">
+
+			 	<div id="preloader" class="preloader" >
+			 		<img src="http://testing.umbrellasupport.co.uk/wp-content/uploads/2016/07/preload.gif" />
+			 	</div>
+
 				<form id="manageicons" type="post" action="">
 				<input type="hidden" id="p_clientid" name="p_clientid" value="<?php echo $getName->data[0]->id; ?>" />
                     <p>
@@ -134,72 +139,80 @@
                            <input onClick="enablefields()" type="radio" id="S_OB_R1" name="p_obut" value="1" <?php echo ($getRowsCI->ci_buttontype == "CUSTOM" ? "checked" : ""); ?> />
                            <label for="S_OB_R1">Yes</label>
                        </div>
+            
                    </div> 
-                    <?php
-                        //echo photo_gallery(6);
-                        $query 	= "SELECT * FROM ".$wpdb->prefix."posts WHERE post_title LIKE '%CHATICON%' ORDER BY post_title DESC";
-                        $images = $wpdb->get_results($query);
+            		
+            		<div class="image-icon-online-offline" >
 
-                        if(count($images)>0){
-                            echo '<div style="width: 100%; margin: 0 auto; clear: both; margin-bottom: 50px; padding: 10px 50px;" id="pnw-select-div" >';
-                                $reccount 	= 0;
-                                $incnum		= 1;
-                                $maxCount   = sizeof($images);
-                                $endOfArr 	= 0;
-                                foreach($images as $img){
-                                    $reccount++;
-                                    $endOfArr++;
+	                    <?php
+	                        //echo photo_gallery(6);
+	                        $query 	= "SELECT * FROM ".$wpdb->prefix."posts WHERE post_title LIKE '%CHATICON%' ORDER BY post_title DESC";
+	                        $images = $wpdb->get_results($query);
 
-                                    if($reccount == 1){
-                                        echo '<div style="float:left; width: 50%">';
-                                    }
-                                    echo '<img style="width:140px;" src="'.$img->guid.'"> ';
+	                        if(count($images)>0){
+	                            echo '<div style="width: 100%; margin: 0 auto; clear: both; margin-bottom: 50px; padding: 10px 50px;" id="pnw-select-div" >';
+	                                $reccount 	= 0;
+	                                $incnum		= 1;
+	                                $maxCount   = sizeof($images);
+	                                $endOfArr 	= 0;
+	                                foreach($images as $img){
+	                                    $reccount++;
+	                                    $endOfArr++;
 
-                                    if($reccount==2){
-                                        echo '<section class="container">';
-                                        echo '<div class="switch switch-blue">';
-                                        echo '<input onClick="disablefields()" type="radio" class="switch-input" id="S_CI_'.$incnum.'" name="p_cicon" value="'.$img->guid.'" '.($getRowsCI->ci_buttontype == "DEFAULT" && $getRowsCI->ci_imgpathoff == $img->guid ? "checked" : "").'>';
-                                        echo '<label for="S_CI_'.$incnum.'" class="switch-label switch-label-on" id="pnw-select" >Select</label>';
-                                        echo '<span class="switch-selection"></span>';
-                                        echo '</div>';
-                                        echo '</section>';
-                                        echo '</div>';
-                                        if($endOfArr < $maxCount)
-                                        	echo '<div style="float:right; width: 50%">';
-                                    }
-                                    if($reccount == 4){
-                                        //echo '<div class="funkyradio">';
-                                        //echo '<div class="funkyradio-success">';
-                                        //echo '<input type="radio" id="S_CI_'.$incnum.'" name="p_cicon" value="1"/>';
-                                        //echo '<label for="S_CI_'.$incnum.'">Choose Icon</label>';
-                                        echo '<section class="container">';
-                                        echo '<div class="switch switch-blue">';
-                                        echo '<input  onClick="disablefields()" type="radio" class="switch-input" id="S_CI_'.$incnum.'" name="p_cicon" value="'.$img->guid.'" '.($getRowsCI->ci_buttontype == "DEFAULT" && $getRowsCI->ci_imgpathoff == $img->guid ? "checked" : "").'>';
-                                        echo '<label for="S_CI_'.$incnum.'" class="switch-label switch-label-on" id="pnw-select" >Select</label>';
-                                        echo '<span class="switch-selection"></span>';
-                                        echo '</div>';
-                                        echo '</section>';
-                                        echo '</div>';
-                                        $reccount = 0;
-                                    }
-                                    $incnum++;
-                                }
-                                echo '</div>';
-                        }else{
-                            echo "<h2>There are no images found in the gallery.</h2>";
-                        }
-                    ?>
-			
+	                                    if($reccount == 1){
+	                                        echo '<div style="float:left; width: 50%">';
+	                                    }
+	                                    echo '<img style="width:140px;" src="'.$img->guid.'"> ';
+
+	                                    if($reccount==2){
+	                                        echo '<section class="container">';
+	                                        echo '<div class="switch switch-blue">';
+	                                        echo '<input onClick="disablefields()" type="radio" class="switch-input" id="S_CI_'.$incnum.'" name="p_cicon" value="'.$img->guid.'" '.($getRowsCI->ci_buttontype == "DEFAULT" && $getRowsCI->ci_imgpathoff == $img->guid ? "checked" : "").'>';
+	                                        echo '<label for="S_CI_'.$incnum.'" class="switch-label switch-label-on" id="pnw-select" >Select</label>';
+	                                        echo '<span class="switch-selection"></span>';
+	                                        echo '</div>';
+	                                        echo '</section>';
+	                                        echo '</div>';
+	                                        if($endOfArr < $maxCount)
+	                                        	echo '<div style="float:right; width: 50%">';
+	                                    }
+	                                    if($reccount == 4){
+	                                        //echo '<div class="funkyradio">';
+	                                        //echo '<div class="funkyradio-success">';
+	                                        //echo '<input type="radio" id="S_CI_'.$incnum.'" name="p_cicon" value="1"/>';
+	                                        //echo '<label for="S_CI_'.$incnum.'">Choose Icon</label>';
+	                                        echo '<section class="container">';
+	                                        echo '<div class="switch switch-blue">';
+	                                        echo '<input  onClick="disablefields()" type="radio" class="switch-input" id="S_CI_'.$incnum.'" name="p_cicon" value="'.$img->guid.'" '.($getRowsCI->ci_buttontype == "DEFAULT" && $getRowsCI->ci_imgpathoff == $img->guid ? "checked" : "").'>';
+	                                        echo '<label for="S_CI_'.$incnum.'" class="switch-label switch-label-on" id="pnw-select" >Select</label>';
+	                                        echo '<span class="switch-selection"></span>';
+	                                        echo '</div>';
+	                                        echo '</section>';
+	                                        echo '</div>';
+	                                        $reccount = 0;
+	                                    }
+	                                    $incnum++;
+	                                }
+	                                echo '</div>';
+	                        }else{
+	                            echo "<h2>There are no images found in the gallery.</h2>";
+	                        }
+	                    ?>
+					</div>
+
                     <div style="clear:both">   </div>
-                    <div id="error_container"></div><br />
-                    <div id="preloader"  style="height: 40px;display: none;" ><img src="http://testing.umbrellasupport.co.uk/wp-content/uploads/2016/07/preload.gif" /></div>
+                    <div id="error_container"></div><br /> 
                     <input type="hidden" name="action" value="process_icons"/> 
                     <input id="bigbutton" type="button" onClick="processicons()" name="p_submit" value="Save and Continue" />
 				</form>
 			</div>
-
-			
+ 
 			<div id="tab-2" class="ctab-content  content-tab-2"> 
+
+				<div id="pnw-save-domain-loader" class="preloader" >  
+					<img src="http://testing.umbrellasupport.co.uk/wp-content/uploads/2016/07/preload.gif" /> 
+				</div>
+
 
 				<?php  
 					$domains = $liveChatSettings->getClientSites(getCurrentLogggedInAccountId()); 
@@ -305,16 +318,17 @@
 					</tr>
 				</table>
 
-				<div id="pnw-save-domain-loader" style="display:none">  
-					<img src="http://testing.umbrellasupport.co.uk/wp-content/uploads/2016/07/preload.gif" /> 
-				</div>
+			
 				
 				<!-- <button id="bigbutton" onclick="processWebsite('Save And Continue')">Save and Continue </button> -->
 				<input type="button" id="bigbutton" onclick="processWebsite('Save And Continue')" value="Save and Continue">
-
-
+ 
 			</div> <!-- end tab 2 -->
 			<div id="tab-3" class="ctab-content">
+
+				<div id="pnw-chat-settings-loader" class="preloader" >  
+					<img src="http://testing.umbrellasupport.co.uk/wp-content/uploads/2016/07/preload.gif" /> 
+				</div>
 
 				<form action="#" method="post" id="pnw_chat_settings" >
 
@@ -382,24 +396,42 @@
 						<tr>
 							<td colspan="2">
 
-								<div id="pnw-chat-settings-loader" style="display:none">  
-									<img src="http://testing.umbrellasupport.co.uk/wp-content/uploads/2016/07/preload.gif" /> 
-								</div>
+							
 								
 								<input type="button" id="bigbutton" onclick="proceeChatSettings()" value="Save and Continue"> 
 							</td>
 						</tr>
 					</table>
 
-				</form>
-
-
-
-
+				</form> 
 			</div>
 
-			<div id="tab-4" class="ctab-content">
-				Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+			<div id="tab-4" class="ctab-content ">
+
+				<!-- Place this tag where you want the Live Helper Plugin to render. -->
+				 
+				<!-- Place this tag after the Live Helper Plugin tag. -->
+				
+
+<pre class="prettyprint">  
+&lt;script type="text/javascript" &gt;
+var LHCChatOptions = {};
+LHCChatOptions.opt = {widget_height:340,widget_width:300,popup_height:520,popup_width:500};
+(function() {
+var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+var referrer = (document.referrer) ? encodeURIComponent(document.referrer.substr(document.referrer.indexOf('://')+1)) : '';
+var location  = (document.location) ? encodeURIComponent(window.location.href.substring(window.location.protocol.length)) : '';
+po.src = '//live121support.com/index.php/chat/getstatus/(click)/internal/(position)/bottom_right/(ma)/br/(top)/350/(units)/pixels/(leaveamessage)/true/(department)/3?r='+referrer+'&l='+location;
+var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+})();
+&lt;/script&gt;
+
+
+
+
+</pre>
+
+
 			</div>
 
 		</div><!-- container -->

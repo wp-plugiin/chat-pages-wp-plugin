@@ -51,10 +51,13 @@ function disablefields()
 	$("#p_ctxt2").val(null);
 	$("#S_OB_L1").prop('checked', true);
 	$("#S_OB_R1").prop('checked', false);
+	$('.urltext').css('background-color', '#e4e4e4');
 }
 
 function enablefields()
-{
+{ 
+	$('.urltext').css('background-color', 'white');
+
 	$("#p_ctxt1").prop('disabled',false);
 	$("#p_ctxt2").prop('disabled',false);
 	<?php
