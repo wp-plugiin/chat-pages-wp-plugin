@@ -42,19 +42,22 @@ input#bigbutton {
 
 
 .preloader {
-	margin-bottom:30px;
-	height: 563px !important;
-	width: 770px;
+	/*margin-bottom:30px;*/
+	/*height: 563px !important;*/
+	/*width: 770px;*/
 	display: none;
 	position: absolute; 
 	z-index:5;
-	opacity:0.7
-	 
+	opacity:0.7;
+	margin-left:90px; 
+	margin-top:10px;
 }
 
 .preloader img { 
-	margin-left:350px;
-	margin-top:250px; 
+	/*	margin-left:350px;
+	margin-top:250px; */
+	width:50%;
+
 }  
 
 

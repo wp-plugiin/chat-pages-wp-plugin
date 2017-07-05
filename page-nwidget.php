@@ -85,7 +85,7 @@
 		$liveChatSettings	= new LiveChatSettings(new CHAT_QUERIES\Chat_Queries('wp_clientsites'), 'wp_clientsites');  
 
 
-		print " co_chatformat = " . $getRowsCO->co_chatformat; 
+		// print " co_chatformat = " . $getRowsCO->co_chatformat; 
 
 ?>
 
@@ -115,9 +115,7 @@
 			</div> 
 			<div id="tab-1" class="ctab-content current transaction-query">
 
-			 	<div id="preloader" class="preloader" >
-			 		<img src="http://testing.umbrellasupport.co.uk/wp-content/uploads/2016/07/preload.gif" />
-			 	</div>
+			
 
 				<form id="manageicons" type="post" action="">
 				<input type="hidden" id="p_clientid" name="p_clientid" value="<?php echo $getName->data[0]->id; ?>" />
@@ -203,15 +201,17 @@
                     <div style="clear:both">   </div>
                     <div id="error_container"></div><br /> 
                     <input type="hidden" name="action" value="process_icons"/> 
+                 	<div id="preloader" class="preloader" >
+				 		<img src="http://testing.umbrellasupport.co.uk/wp-content/uploads/2016/07/preload.gif" />
+				 	</div>
+
                     <input id="bigbutton" type="button" onClick="processicons()" name="p_submit" value="Save and Continue" />
 				</form>
 			</div>
  
 			<div id="tab-2" class="ctab-content  content-tab-2"> 
 
-				<div id="pnw-save-domain-loader" class="preloader" >  
-					<img src="http://testing.umbrellasupport.co.uk/wp-content/uploads/2016/07/preload.gif" /> 
-				</div>
+				
 
 
 				<?php  
@@ -319,16 +319,16 @@
 				</table>
 
 			
-				
+				<div id="pnw-save-domain-loader" class="preloader" >  
+					<img src="http://testing.umbrellasupport.co.uk/wp-content/uploads/2016/07/preload.gif" /> 
+				</div>	
 				<!-- <button id="bigbutton" onclick="processWebsite('Save And Continue')">Save and Continue </button> -->
 				<input type="button" id="bigbutton" onclick="processWebsite('Save And Continue')" value="Save and Continue">
  
 			</div> <!-- end tab 2 -->
 			<div id="tab-3" class="ctab-content">
 
-				<div id="pnw-chat-settings-loader" class="preloader" >  
-					<img src="http://testing.umbrellasupport.co.uk/wp-content/uploads/2016/07/preload.gif" /> 
-				</div>
+			
 
 				<form action="#" method="post" id="pnw_chat_settings" >
 
@@ -397,7 +397,9 @@
 							<td colspan="2">
 
 							
-								
+								<div id="pnw-chat-settings-loader" class="preloader" >  
+									<img src="http://testing.umbrellasupport.co.uk/wp-content/uploads/2016/07/preload.gif" /> 
+								</div>
 								<input type="button" id="bigbutton" onclick="proceeChatSettings()" value="Save and Continue"> 
 							</td>
 						</tr>
