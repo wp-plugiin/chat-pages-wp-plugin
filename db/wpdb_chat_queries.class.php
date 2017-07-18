@@ -18,11 +18,18 @@ class Chat_Queries
      *
      * @param null $table_name
      */
-    function __construct($table_name = null)
+    function __construct($table_name = null, $database=null)
     {
         //$t = new test();
         //$t->testighrere();
         $this->table_name = $table_name;
+
+        if(!empty($database)) {
+            $this->wpdb = $database;
+        } else {
+            global $wpdb;
+            $this->wpdb = $wpdb;
+        }
     }
 
     /**
@@ -35,10 +42,7 @@ class Chat_Queries
      */
     public function wpdb_get_result($query_string, $output_type = ARRAY_A)
     {
-
-        // print " db query " . $query_string;
-        global $wpdb;
-        return $wpdb->get_results($query_string, $output_type);
+        return $this->wpdb->get_results($query_string, $output_type);
     }
 
     /**
@@ -56,11 +60,11 @@ class Chat_Queries
      */
     public function wpdb_update($data_array = array(), $where)
     {
-        global $wpdb;
+
         // print "<pre>";
         // print_r($data_array);
         // print "</pre>";
-        $trows = $wpdb->update(
+        $trows = $this->wpdb->update(
             $this->table_name,
             $data_array,
             $where,
@@ -81,8 +85,8 @@ class Chat_Queries
      */
     public function wpdb_delete($where = array())
     {
-        global $wpdb;
-        $trows = $wpdb->delete(
+
+        $trows = $this->wpdb->delete(
             $this->table_name,
             $where,
             $this->wpdb_get_value_type($where)
@@ -99,17 +103,11 @@ class Chat_Queries
      *
      * @return bool
      */
-    public function wpdb_insert($data_array = array(), $conn = null)
+    public function wpdb_insert($data_array = array(), $table = null)
     {
-        //print_r($data_array);
-        if ($conn == null) {
-            global $wpdb;
-        } else {
-            $wpdb = $conn;
-        }
 
-        $trows = $wpdb->insert(
-            $this->table_name,
+        $trows = $this->wpdb->insert(
+            ($table == null ) ? $this->table_name : $table,
             $data_array,
             $this->wpdb_get_value_type($data_array)
         );

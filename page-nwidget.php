@@ -99,10 +99,10 @@
 		</p> 
 		<div class="chat-container">
 			<ul class="ctabs">
-				<li class="ctab-link current transact-none" data-tab="tab-1" id="menu-tab-1" data-visited="active" ><b>Chat Icons</b><span>(Step 1)</span></li>
+				<li class="ctab-link transact-none" data-tab="tab-1" id="menu-tab-1" data-visited="active" ><b>Chat Icons</b><span>(Step 1)</span></li>
 				<li class="ctab-link transact-none" data-tab="tab-2" id="menu-tab-2" data-visited="" ><b>Websites</b><span>(Step 2)</span></li></li>
 				<li class="ctab-link transact-none" data-tab="tab-3" id="menu-tab-3" data-visited="" ><b>Chat Settings</b><span>(Step 3)</span></li>
-				<li class="ctab-link transact-none" data-tab="tab-4" id="menu-tab-4" data-visited="" ><b>Generated Script</b><span>(Step 4)</span></li>
+				<li class="ctab-link current transact-none" data-tab="tab-4" id="menu-tab-4" data-visited="" ><b>Generated Script</b><span>(Step 4)</span></li>
 			</ul>
 			<div class="cmodal" id="modal-one" aria-hidden="true">
 				<div class="cmodal-dialog">
@@ -113,7 +113,7 @@
 					<div class="cmodal-body" style="text-align:center"></div>
 				</div>
 			</div> 
-			<div id="tab-1" class="ctab-content current transaction-query">
+			<div id="tab-1" class="ctab-content transaction-query">
 
 			
 
@@ -326,7 +326,7 @@
 				<input type="button" id="bigbutton" onclick="processWebsite('Save And Continue')" value="Save and Continue">
  
 			</div> <!-- end tab 2 -->
-			<div id="tab-3" class="ctab-content">
+			<div id="tab-3" class="ctab-content ">
 
 			
 
@@ -408,7 +408,7 @@
 				</form> 
 			</div>
 
-			<div id="tab-4" class="ctab-content ">
+			<div id="tab-4" class="ctab-content current ">
 
 				<!-- Place this tag where you want the Live Helper Plugin to render. -->
 				 
@@ -423,14 +423,11 @@ LHCChatOptions.opt = {widget_height:340,widget_width:300,popup_height:520,popup_
 var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
 var referrer = (document.referrer) ? encodeURIComponent(document.referrer.substr(document.referrer.indexOf('://')+1)) : '';
 var location  = (document.location) ? encodeURIComponent(window.location.href.substring(window.location.protocol.length)) : '';
-po.src = '//live121support.com/index.php/chat/getstatus/(click)/internal/(position)/bottom_right/(ma)/br/(top)/350/(units)/pixels/(leaveamessage)/true/(department)/3?r='+referrer+'&l='+location;
+po.src = '//localhost/erwin/richard/debug/live121support.com/index.php/chat/getstatus/(click)/internal/(position)/bottom_right/(ma)/br/(check_operator_messages)/true/(top)/350/(units)/pixels/(leaveamessage)/true?r='+referrer+'&l='+location+'&partner_id=12345';
 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-})();
+})(); 
 &lt;/script&gt;
-
-
-
-
+ 
 </pre>
 
 

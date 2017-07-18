@@ -550,7 +550,7 @@
 			'co_exitpop'    => $request['p_cexitpop'] 
 		]; 
 
-		$results = $chat_queries->wpdb_get_result("select * from wp_chat_options where co_accountid = " . $partner_id); 
+		$results = $chat_queries->wpdb_get_result("select * from wp_clientsites where co_accountid = " . $partner_id);
   
 		if(!empty($results)) {  
 			$status = $chat_queries->wpdb_update(
@@ -560,18 +560,91 @@
 				]
 			); 
    
-		} else {  
+		} else {
 
-			$chatSettings['co_accountid'] = $partner_id;
-			
-			print_r($chatSettings); 
+            $chatSettings['co_accountid'] = $partner_id;
 
-			$status = $chat_queries->wpdb_insert($chatSettings);
+//            print_r($chatSettings);
 
-			if($status)
-				print "insert success";
-			else 
-				print "insert failed";
-		}  
-	} 
+            $status = $chat_queries->wpdb_insert($chatSettings);
+
+            if ($status) {
+//                print "insert success";
+            } else {
+//                print "insert failed";
+            }
+        }
+
+        ////////////////////////////////////////////////////////
+        //////////////////////////LIVE 121//////////////////////
+        ////////////////////////////////////////////////////////
+
+
+        // Connect live 121 helper
+        $live121_queries = new Chat_Queries('lh_companies', connect_live_chat());
+
+		// check if exist already in lh_compaines via partner id
+        $isExist = $live121_queries->wpdb_get_result("SELECT * FROM lh_companies where partner_id = " . $partner_id);
+
+        // get current sites in testing
+        $sites = $chat_queries->wpdb_get_result("select * from wp_clientsites where s_accountid = " . $partner_id);
+
+        $sitesSaved = [];
+
+        foreach($sites as $site) {
+            $sitesSaved[] = $site['s_website'];
+        }
+
+        // Check if exist or not
+        // If not exist then do insert
+        // else do update
+        if(empty($isExist)) {
+            $live121_queries->wpdb_insert(
+                [
+                    'domain' => serialize($sitesSaved),
+                    'name' => 'This is name',
+                    'package' => 'This is package',
+                    'partner_id' => $partner_id
+                ]
+            );
+        } else {
+            $live121_queries->wpdb_update(
+                [
+                    'domain' => serialize($sitesSaved),
+                    'name' => 'This is name1',
+                    'package' => 'This is package1',
+
+                ],
+                [
+                    'partner_id' => $partner_id
+                ]
+            );
+        }
+
+        //  print_r($rows1);
+        //        echo "<ul>";
+        //        foreach ($rows1 as $obj) :
+        //          echo "<li>".$obj->partner_id."</li>";
+        //        endforeach;
+        //        echo "</ul>";
+
+
+//        exit;
+
+
+	}
+
+
+	function connect_live_chat()
+    {
+        if (pnw_is_local()) {
+            print "local";
+            return new wpdb('root', '', 'richard_live_chat_helper', 'localhost');
+        } else {
+            print "online";
+            return new wpdb('dbo655765888', 'ZwokV*#%8STsIx/1', 'db655765888', 'db655765888.db.1and1.com');
+        }
+    }
+
+
 ?>
