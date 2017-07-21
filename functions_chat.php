@@ -537,7 +537,7 @@
  	*/ 
 	function save_chat_settings() 
 	{ 
-		$chat_queries = new Chat_Queries('wp_chat_options'); 
+		$chat_queries = new Chat_Queries('wp_chat_options');
 
 		$partner_id = getCurrentLogggedInAccountId();
 
@@ -550,7 +550,7 @@
 			'co_exitpop'    => $request['p_cexitpop'] 
 		]; 
 
-		$results = $chat_queries->wpdb_get_result("select * from wp_clientsites where co_accountid = " . $partner_id);
+		$results = $chat_queries->wpdb_get_result("select * from wp_chat_options where co_accountid = " . $partner_id);
   
 		if(!empty($results)) {  
 			$status = $chat_queries->wpdb_update(
@@ -578,7 +578,7 @@
         ////////////////////////////////////////////////////////
         //////////////////////////LIVE 121//////////////////////
         ////////////////////////////////////////////////////////
-
+        $companyInfo = getCompanyNameAndPackageLevel();
 
         // Connect live 121 helper
         $live121_queries = new Chat_Queries('lh_companies', connect_live_chat());
@@ -586,14 +586,14 @@
 		// check if exist already in lh_compaines via partner id
         $isExist = $live121_queries->wpdb_get_result("SELECT * FROM lh_companies where partner_id = " . $partner_id);
 
+        // get current chat icons
+        $icons = $chat_queries->wpdb_get_result("select * from wp_chat_icons where ci_accountid = " . $partner_id);
+
+        // get current chat options
+        $settings = $chat_queries->wpdb_get_result("select * from wp_chat_options where co_accountid = " . $partner_id);
+
         // get current sites in testing
         $sites = $chat_queries->wpdb_get_result("select * from wp_clientsites where s_accountid = " . $partner_id);
-
-        $sitesSaved = [];
-
-        foreach($sites as $site) {
-            $sitesSaved[] = $site['s_website'];
-        }
 
         // Check if exist or not
         // If not exist then do insert
@@ -601,19 +601,22 @@
         if(empty($isExist)) {
             $live121_queries->wpdb_insert(
                 [
-                    'domain' => serialize($sitesSaved),
-                    'name' => 'This is name',
-                    'package' => 'This is package',
+                    'domain' => serialize($sites),
+                    'icons' => serialize($icons),
+                    'settings' => serialize($settings),
+                    'name' => $companyInfo['company'],
+                    'package' => $companyInfo['packageLevel'],
                     'partner_id' => $partner_id
                 ]
             );
         } else {
             $live121_queries->wpdb_update(
                 [
-                    'domain' => serialize($sitesSaved),
-                    'name' => 'This is name1',
-                    'package' => 'This is package1',
-
+                    'domain' => serialize($sites),
+                    'icons' => serialize($icons),
+                    'settings' => serialize($settings),
+                    'name' => $companyInfo['company'],
+                    'package' => $companyInfo['packageLevel'],
                 ],
                 [
                     'partner_id' => $partner_id
@@ -621,19 +624,52 @@
             );
         }
 
-        //  print_r($rows1);
-        //        echo "<ul>";
-        //        foreach ($rows1 as $obj) :
-        //          echo "<li>".$obj->partner_id."</li>";
-        //        endforeach;
-        //        echo "</ul>";
 
-
-//        exit;
-
+        print " unserialized";
+        print_r(unserialize($isExist[0]['settings']));
 
 	}
 
+	function getCompanyNameAndPackageLevel()
+    {
+        if (pnw_is_local()) {
+            $response['company'] = 'This is company name';
+            $response['packageLevel'] = 'This is package level';
+
+            return $response;
+        } else {
+            // print "user is logged in ";
+
+            $current_user = wp_get_current_user();
+            //$customAPIKEY  = get_field('custom_api_key','option');// name of the admin
+            //$customAPIID  = get_field('custom_api_id','option');// Email Title for the admin
+            //echo "Email Address: " . $current_user->user_email;
+            //$postargs = "http://api.ontraport.com/1/objects?objectID=0&performAll=true&sortDir=asc&condition=email%3D'testing@umbrellasupport.co.uk'&searchNotes=true";
+            $postargs = "http://api.ontraport.com/1/objects?objectID=0&performAll=true&sortDir=asc&condition=email%3D'" . $current_user->user_email . "'&searchNotes=true";
+
+            $session = curl_init();
+            curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($session, CURLOPT_URL, $postargs);
+            //curl_setopt ($session, CURLOPT_HEADER, true);
+            curl_setopt($session, CURLOPT_HTTPHEADER, array(
+                'Api-Appid:2_7818_AFzuWztKz',
+                'Api-Key:fY4Zva90HP8XFx3'
+            ));
+
+            $response = curl_exec($session);
+            curl_close($session);
+
+            //header("Content-Type: text");
+            //echo "CODE: " . $response;
+
+            $getName = json_decode($response);
+
+            $response['company'] = $getName->data[0]->company;
+            $response['packageLevel'] = $getName->data[0]->f1548;
+
+            return $response;
+        }
+    }
 
 	function connect_live_chat()
     {
@@ -645,6 +681,4 @@
             return new wpdb('dbo655765888', 'ZwokV*#%8STsIx/1', 'db655765888', 'db655765888.db.1and1.com');
         }
     }
-
-
 ?>

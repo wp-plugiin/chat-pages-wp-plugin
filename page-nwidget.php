@@ -418,14 +418,14 @@
 <pre class="prettyprint">  
 &lt;script type="text/javascript" &gt;
 var LHCChatOptions = {};
-LHCChatOptions.opt = {widget_height:340,widget_width:300,popup_height:520,popup_width:500};
-(function() {
-var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-var referrer = (document.referrer) ? encodeURIComponent(document.referrer.substr(document.referrer.indexOf('://')+1)) : '';
-var location  = (document.location) ? encodeURIComponent(window.location.href.substring(window.location.protocol.length)) : '';
-po.src = '//localhost/erwin/richard/debug/live121support.com/index.php/chat/getstatus/(click)/internal/(position)/bottom_right/(ma)/br/(check_operator_messages)/true/(top)/350/(units)/pixels/(leaveamessage)/true?r='+referrer+'&l='+location+'&partner_id=12345';
-var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-})(); 
+    LHCChatOptions.opt = {widget_height:340,widget_width:300,popup_height:520,popup_width:500};
+    (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        var referrer = (document.referrer) ? encodeURIComponent(document.referrer.substr(document.referrer.indexOf('://')+1)) : '';
+        var location  = (document.location) ? encodeURIComponent(window.location.href.substring(window.location.protocol.length)) : '';
+        po.src = '//localhost/erwin/richard/debug/live121support.com/index.php/chat/getstatus/(click)/internal/(position)/bottom_right/(ma)/br/(top)/350/(units)/pixels/(leaveamessage)/true/(department)/2?r='+referrer+'&l='+location+'&partner_id=<?php print pnw_partner_id(); ?>';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
 &lt;/script&gt;
  
 </pre>
