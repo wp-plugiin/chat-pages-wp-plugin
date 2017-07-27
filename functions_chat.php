@@ -580,6 +580,13 @@
         ////////////////////////////////////////////////////////
         $companyInfo = getCompanyNameAndPackageLevel();
 
+
+		if( connect_live_chat() ) {
+		   //print " connected. ";
+        } else {
+		    //print " not connected. ";
+        }
+
         // Connect live 121 helper
         $live121_queries = new Chat_Queries('lh_companies', connect_live_chat());
 
@@ -599,35 +606,49 @@
         // If not exist then do insert
         // else do update
         if(empty($isExist)) {
-            $live121_queries->wpdb_insert(
-                [
-                    'domain' => serialize($sites),
-                    'icons' => serialize($icons),
-                    'settings' => serialize($settings),
-                    'name' => $companyInfo['company'],
-                    'package' => $companyInfo['packageLevel'],
-                    'partner_id' => $partner_id
-                ]
-            );
+           // print " insert ";
+
+            $data =     [
+                'domain' => serialize($sites),
+                'icons' => serialize($icons),
+                'settings' => serialize($settings),
+                'name' => $companyInfo['company'],
+                'package' => $companyInfo['packageLevel'],
+                'partner_id' => $partner_id
+            ];
+
+            $status = $live121_queries->wpdb_insert( $data );
+
         } else {
-            $live121_queries->wpdb_update(
-                [
-                    'domain' => serialize($sites),
-                    'icons' => serialize($icons),
-                    'settings' => serialize($settings),
-                    'name' => $companyInfo['company'],
-                    'package' => $companyInfo['packageLevel'],
-                ],
+            //print " update";
+            $data =  [
+                'domain' => serialize($sites),
+                'icons' => serialize($icons),
+                'settings' => serialize($settings),
+                'name' => $companyInfo['company'],
+                'package' => $companyInfo['packageLevel'],
+            ];
+
+            $status = $live121_queries->wpdb_update(
+                $data
+                ,
                 [
                     'partner_id' => $partner_id
                 ]
             );
         }
 
+        if($status) {
+            //print "<br> success";
+        } else {
+            //print "<br> failed";
+        }
 
-        print " unserialized";
-        print_r(unserialize($isExist[0]['settings']));
+        // print " unserialized";
+        // print_r(unserialize($isExist[0]['settings']));
 
+
+       // print_r($data); 
 	}
 
 	function getCompanyNameAndPackageLevel()
@@ -674,10 +695,10 @@
 	function connect_live_chat()
     {
         if (pnw_is_local()) {
-            print "local";
+            // print "local";
             return new wpdb('root', '', 'richard_live_chat_helper', 'localhost');
         } else {
-            print "online";
+            // print "online";
             return new wpdb('dbo655765888', 'ZwokV*#%8STsIx/1', 'db655765888', 'db655765888.db.1and1.com');
         }
     }

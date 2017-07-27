@@ -25,8 +25,10 @@ class Chat_Queries
         $this->table_name = $table_name;
 
         if(!empty($database)) {
+            //print "custom connection";
             $this->wpdb = $database;
         } else {
+            //print "automatic connection";
             global $wpdb;
             $this->wpdb = $wpdb;
         }
@@ -106,8 +108,16 @@ class Chat_Queries
     public function wpdb_insert($data_array = array(), $table = null)
     {
 
+        $table  = ($table == null ) ? $this->table_name : $table;
+
+        //print "insert<br>";
+        //print_r($data_array);
+        $data_value_type = $this->wpdb_get_value_type($data_array);
+        //print "value type <br>";
+        //print_r($data_value_type);
+
         $trows = $this->wpdb->insert(
-            ($table == null ) ? $this->table_name : $table,
+            $table,
             $data_array,
             $this->wpdb_get_value_type($data_array)
         );

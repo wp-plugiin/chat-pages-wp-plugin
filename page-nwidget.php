@@ -99,10 +99,10 @@
 		</p> 
 		<div class="chat-container">
 			<ul class="ctabs">
-				<li class="ctab-link transact-none" data-tab="tab-1" id="menu-tab-1" data-visited="active" ><b>Chat Icons</b><span>(Step 1)</span></li>
+				<li class="ctab-link current transact-none" data-tab="tab-1" id="menu-tab-1" data-visited="active" ><b>Chat Icons</b><span>(Step 1)</span></li>
 				<li class="ctab-link transact-none" data-tab="tab-2" id="menu-tab-2" data-visited="" ><b>Websites</b><span>(Step 2)</span></li></li>
 				<li class="ctab-link transact-none" data-tab="tab-3" id="menu-tab-3" data-visited="" ><b>Chat Settings</b><span>(Step 3)</span></li>
-				<li class="ctab-link current transact-none" data-tab="tab-4" id="menu-tab-4" data-visited="" ><b>Generated Script</b><span>(Step 4)</span></li>
+				<li class="ctab-link transact-none" data-tab="tab-4" id="menu-tab-4" data-visited="" ><b>Generated Script</b><span>(Step 4)</span></li>
 			</ul>
 			<div class="cmodal" id="modal-one" aria-hidden="true">
 				<div class="cmodal-dialog">
@@ -113,7 +113,7 @@
 					<div class="cmodal-body" style="text-align:center"></div>
 				</div>
 			</div> 
-			<div id="tab-1" class="ctab-content transaction-query">
+			<div id="tab-1" class="ctab-content current transaction-query">
 
 			
 
@@ -408,7 +408,7 @@
 				</form> 
 			</div>
 
-			<div id="tab-4" class="ctab-content current ">
+			<div id="tab-4" class="ctab-content">
 
 				<!-- Place this tag where you want the Live Helper Plugin to render. -->
 				 
